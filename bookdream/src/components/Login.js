@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { useNavigate } from "react-router-dom";
-import { account } from "../appwriteConfig";
+import { account } from "../appwrite/appwriteConfig";
 
 
 function Login(){

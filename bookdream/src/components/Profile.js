@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { account, databases, usersCollection, databaseKey } from '../appwriteConfig';
+import { account, databases, usersCollection, databaseKey } from '../appwrite/appwriteConfig';
 import { useNavigate } from 'react-router-dom';
 import { ID } from 'appwrite';
 
@@ -174,7 +174,36 @@ function Profile(){
         <>
         {userDetails ? (
             <>
-                <div className="App">
+            <div className="ProfilePage">
+                <header>
+                    <div className="NavBar">
+                        <h5 className="BoldText">Book Dream</h5>
+                        <button className="Logout" onClick={handleLogout}>Logout</button>
+                    </div>
+                </header>
+                <div className="horizontal-align">
+                    <div className="Lookup-Tile">
+                        {currentBook ? (
+                            <>
+                                <h3>Title: {currentBook.getTitle()}</h3>
+                                {coverUrl ? (
+                                    <img className="coverImage" src={coverUrl} alt="book_image" />
+                                ) : (
+                                    <h4>No cover available</h4>
+                                )}
+                                <h4>
+                                    Authors: {authorNames.length > 0 ? authorNames.join(', ') : 'Unknown'} <br />
+                                    Genres: {currentBook.getGenres().length > 0 ? currentBook.getGenres().join(', ') : 'Unknown'}
+                                </h4>
+                            </>
+
+                        ) : (
+                            <h4>{scanState}</h4>
+                        )}
+                    </div>
+                </div>
+            </div>
+                {/* <div className="App">
                     <div className='bookTile'>
                     {coverUrl ? (
                         <img className="coverImage" src={coverUrl} alt="book_image" />
@@ -192,15 +221,15 @@ function Profile(){
                     )}
                     </div>
                     <button onClick={handleEnterBook}>Enter Book</button>
-                    <button onClick={handleLogout}>Logout</button>
-                </div>
+                    
+                </div> */}
             </>
         ) : (
             <>
             <p>Please Login</p>
             <button onClick={goToLogin}>Login</button>
             </>
-        )};
+        )}
         </>
         
     );

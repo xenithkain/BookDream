@@ -1,43 +1,76 @@
-/* .App{
-  display:flex;
-  flex-direction: column;
-  align-self: center;
-  justify-self: center;
-  padding: 5px;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid black;
-  background-color: rgb(162, 214, 162);
-  height: 700px;
-  width: 500px;
-  margin: auto;
-}
-.lookUp{
-  width:100%;
-  height:100%;
-}
-.coverImage{
-  height:min-content;
-} */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 
-.App {
-  font-family: Arial, sans-serif;
+h1{
+  font-size: 2.986rem;
+}
+
+h2{
+  font-size: 2.488rem;
+}
+
+h3{
+  font-size: 2.074rem;
+}
+
+h4{
+  font-size: 1.728rem;
+}
+
+h5{
+  font-size: 1.44rem;
+}
+
+.BoldText{
+  font-weight: bold;
+}
+
+.Lookup-Tile{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border: 1.5px solid black;
+  border-radius: 10px;
+  width: fit-content;
+  height: fit-content;
+  margin-left: auto;
+  margin-right: 10%;
+  margin-top: 5%;
   padding: 20px;
 }
 
-.bookTile {
+.ProfilePage{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+header{
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+}
+
+.NavBar{
+  display: flex;
+  margin: 5px;
+  width: 80%;
+  height: fit-content;
+  border: 2px solid black;
+  border-radius: 10px;
+  padding: 5px;
   align-items: center;
-  text-align: center;
 }
 
-.coverImage {
-  max-width: 100%;
-  height: auto; /* Maintain aspect ratio */
-  margin-bottom: 20px; /* Space between image and other elements */
+.Logout{
+  border: 1px solid black;
+  padding: 5px;
+  border-radius: 5px;
+  margin-left: auto;
+  background-color: white;
+  font-family: "Nunito";
 }
 
-.lookUp {
-  margin-bottom: 20px; /* Space between button and book info */
+
+.Logout:hover{
+  background-color: rgb(235, 235, 235);
 }

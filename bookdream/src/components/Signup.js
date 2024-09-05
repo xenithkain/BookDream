@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { account } from '../appwriteConfig';
+import { account } from '../appwrite/appwriteConfig';
 import { useNavigate } from 'react-router-dom';
 import { ID } from 'appwrite';
 
