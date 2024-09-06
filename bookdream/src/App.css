@@ -20,6 +20,14 @@ h5{
   font-size: 1.44rem;
 }
 
+h6{
+  font-size: 1.2rem;
+}
+
+p{
+  font-size: 1rem;
+}
+
 .BoldText{
   font-weight: bold;
 }
@@ -32,11 +40,87 @@ h5{
   border: 1.5px solid black;
   border-radius: 10px;
   width: fit-content;
+  max-width: 30%;
   height: fit-content;
   margin-left: auto;
   margin-right: 10%;
   margin-top: 5%;
   padding: 20px;
+}
+
+.HorizontalBox{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.BookList{
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  height:auto;
+  max-width: 40%;
+}
+
+.BookTile{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid black;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 5px;
+}
+
+.BookTileImage{
+  height: 65%;
+  width:auto;
+}
+
+.UploadBookButton{
+  border: 1px solid black;
+  padding: 5px;
+  border-radius: 5px;
+  margin-left: auto;
+  background-color: white;
+  font-family: "Nunito";
+}
+
+.BookOptionsModalContainer{
+  height: fit-content;
+  width: fit-content;
+  position: absolute;
+  border: 2px solid green;
+  border-radius: 10px;
+  padding: 5px;
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 5px;
+  gap: 5px;
+}
+
+.BookOptionsButton{
+  border: 1px solid black;
+  border-radius: 10px;
+}
+
+.ModalClose{
+  height: fit-content;
+  width: 20%;
+  border: 1px solid black;
+  border-radius: 10px;
+}
+.ModalClose:hover{
+  background-color: rgb(235, 235, 235);
+}
+
+.BookOptions{
+  display: flex;
+  flex-direction: column;
 }
 
 .ProfilePage{
