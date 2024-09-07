@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import Book from './BookStuff/Book'
 import * as op from '../openlibrary/openlibrary'
 import BookList from './BookStuff/BookList'
-import BookUploadTile from './BookStuff/BookUploadTile' // Import BookUploadTile
+import LookupTile from './BookStuff/BookUploadTile' // Import LookupTile
 
 function Profile () {
   const navigate = useNavigate()
@@ -20,6 +20,11 @@ function Profile () {
   const [isbn, setIsbn] = useState('')
   const [scanState, setScanState] = useState('No Book Scanned')
   const [books, setBooks] = useState([])
+  const [selectMode, setSelectMode] = useState(false)
+  const [checkedBooks, setCheckedBooks] = useState({})
+  const [checkedCount, setCheckedCount] = useState()
+
+  //   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
 
   const handleLogout = async () => {
     try {
@@ -45,6 +50,7 @@ function Profile () {
   }, [userDetails])
 
   useEffect(() => {
+    setCheckedCount(Object.values(checkedBooks).filter(Boolean).length)
     const fetchBooks = async () => {
       const booksString = await getBooks()
       const books = JSON.parse(booksString) || []
@@ -52,7 +58,7 @@ function Profile () {
     }
 
     fetchBooks()
-  }, [getBooks, bookScanned])
+  }, [getBooks, bookScanned, checkedBooks])
 
   useEffect(() => {
     const getData = account.get()
@@ -130,7 +136,11 @@ function Profile () {
       )
     }
   }
-
+  const onClick = event => {
+    console.log('setting select to false from Profile')
+    setSelectMode(false)
+    setCheckedBooks(0)
+  }
   const createBook = isbn => {
     if (isbn.length > 0 && (isbn.length === 10 || isbn.length === 13)) {
       let newBook = new Book()
@@ -193,9 +203,23 @@ function Profile () {
                 </button>
               </div>
             </header>
+            {selectMode ? (
+              <button onClick={onClick}>Stop Select</button>
+            ) : (
+              <></>
+            )}
             <div className='HorizontalBox'>
-              <BookList books={books} />
-              <BookUploadTile
+              <BookList
+                books={books}
+                setBooks={setBooks}
+                selectMode={selectMode}
+                setSelectMode={setSelectMode}
+                checkedCount={checkedCount}
+                setCheckedCount={setCheckedCount}
+                checkedBooks={checkedBooks}
+                setCheckedBooks={setCheckedBooks}
+              />
+              <LookupTile
                 book={currentBook}
                 scanState={scanState}
                 handleBookUpload={handleBookUpload}

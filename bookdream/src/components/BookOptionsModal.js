@@ -1,4 +1,4 @@
-function BookOptionsModal ({ isOpen, position, onClose }) {
+function BookOptionsModal ({ isOpen, position, onClose, isbn }) {
   if (!isOpen) return
 
   return (

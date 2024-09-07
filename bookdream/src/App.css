@@ -107,6 +107,16 @@ p{
   border: 1px solid black;
   border-radius: 10px;
 }
+.DeleteButton{
+  width: fit-content;
+  height:fit-content;
+  border: 2px solid red;
+  background-color: rgb(164, 6, 6);
+}
+.DeleteButton:hover{
+  border: 2px solid rgb(164, 6, 6);
+  background-color: red;
+}
 
 .ModalClose{
   height: fit-content;
