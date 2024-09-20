@@ -48,6 +48,44 @@ p {
   padding: 20px;
 }
 
+.AddButton{
+  border: 1.5px solid black;
+  border-radius: 50%;
+  height: 4vh;
+  width: 4vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10%;
+  font-size: 2rem;
+  font-weight:bold;
+  text-align: center;
+}
+
+.BookshelvesPageContainer{
+
+}
+
+.ScanModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ScanModelContainer{
+  height: 95vh;
+  width: 50vw;
+  border: 2px solid black;
+  border-radius: 10px;
+  background-color: white;
+}
+
 .HorizontalBox {
   display: flex;
   flex-direction: row;
@@ -88,6 +126,22 @@ p {
 }
 
 .BookOptionsModalContainer {
+  height: fit-content;
+  width: fit-content;
+  position: absolute;
+  border: 2px solid green;
+  border-radius: 10px;
+  padding: 5px;
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 5px;
+  gap: 5px;
+}
+
+.BookAdditionsModalContainer{
   height: fit-content;
   width: fit-content;
   position: absolute;

@@ -1,53 +1,56 @@
-import "./App.css";
-import { Route, Routes } from "react-router-dom";
-import SignupPage from "./pages/SignupPage";
-import LoginPage from "./pages/LoginPage";
-import ProfilePage from "./pages/ProfilePage";
-import BookshelvesPage from "./pages/BookshelvesPage";
-import BookbagPage from "./pages/bookbagpage";
-import ClassroomsPage from "./pages/classroomspage";
-import TagsPage from "./pages/tagspage";
-import NavBar from "./components/NavBar";
-import { useState } from "react";
+import './App.css'
+import { Route, Routes } from 'react-router-dom'
+import SignupPage from './pages/SignupPage'
+import LoginPage from './pages/LoginPage'
+// import ProfilePage from './pages/ProfilePage'
+import BookshelvesPage from './pages/BookshelvesPage'
+import BookbagPage from './pages/bookbagpage'
+import ClassroomsPage from './pages/classroomspage'
+import TagsPage from './pages/tagspage'
+import NavBar from './components/NavBar'
+import { useState } from 'react'
+import { ScanModalProvider } from './components/ScanModalContext'
 
-function App() {
-  const [showNav, setShowNav] = useState(true);
+function App () {
+  const [showNav, setShowNav] = useState(true)
   return (
     <>
-      {showNav ? <NavBar /> : <></>}
-      <Routes>
-        <Route path="/" element={<LoginPage setShowNav={setShowNav} />} />
-        <Route
-          path="/signuppage"
-          element={<SignupPage setShowNav={setShowNav} />}
-        />
-        <Route
-          path="/loginpage"
-          element={<LoginPage setShowNav={setShowNav} />}
-        />
-        <Route
-          path="/profilepage"
-          element={<ProfilePage setShowNav={setShowNav} />}
-        />
-        <Route
-          path="/bookshelvespage"
-          element={<BookshelvesPage setShowNav={setShowNav} />}
-        />
-        <Route
-          path="/classroomspage"
-          element={<ClassroomsPage setShowNav={setShowNav} />}
-        />
-        <Route
-          path="/bookbagpage"
-          element={<BookbagPage setShowNav={setShowNav} />}
-        />
-        <Route
-          path="/tagspage"
-          element={<TagsPage setShowNav={setShowNav} />}
-        />
-      </Routes>
+      <ScanModalProvider>
+        {showNav ? <NavBar /> : <></>}
+        <Routes>
+          <Route path='/' element={<LoginPage setShowNav={setShowNav} />} />
+          <Route
+            path='/signuppage'
+            element={<SignupPage setShowNav={setShowNav} />}
+          />
+          <Route
+            path='/loginpage'
+            element={<LoginPage setShowNav={setShowNav} />}
+          />
+          {/* <Route
+            path='/profilepage'
+            element={<ProfilePage setShowNav={setShowNav} />}
+          /> */}
+          <Route
+            path='/bookshelvespage'
+            element={<BookshelvesPage setShowNav={setShowNav} />}
+          />
+          <Route
+            path='/classroomspage'
+            element={<ClassroomsPage setShowNav={setShowNav} />}
+          />
+          <Route
+            path='/bookbagpage'
+            element={<BookbagPage setShowNav={setShowNav} />}
+          />
+          <Route
+            path='/tagspage'
+            element={<TagsPage setShowNav={setShowNav} />}
+          />
+        </Routes>
+      </ScanModalProvider>
     </>
-  );
+  )
 }
 
-export default App;
+export default App
