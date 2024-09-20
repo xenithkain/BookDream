@@ -99,7 +99,14 @@ const BookList = ({
                     alt="book_image"
                   />
                 )}
-                <p>{bookData.title}</p>
+                <p>
+                  {bookData.title != "" ? bookData.title : "No title Listed"}
+                </p>
+                <p>
+                  {bookData.authors != ""
+                    ? bookData.authors
+                    : "No authors Listed"}
+                </p>
               </div>
             );
           })}
@@ -111,7 +118,9 @@ const BookList = ({
                   checkedBooks,
                   setBooks,
                   checkedCount,
-                  setCheckedCount
+                  setCheckedCount,
+                  setSelectMode,
+                  setCheckedBooks
                 )
               }
             >
