@@ -43,4 +43,29 @@ class Tag {
   set description(newDescription) {
     this.#description = newDescription;
   }
+
+  returnHTML() {
+    switch (this.#shape) {
+      case "flag":
+        return (
+          <>
+            <div></div>
+          </>
+        );
+      case "oval":
+        break;
+      case "rect":
+        break;
+    }
+  }
+
+  returnJSON() {
+    return {
+      [this.#name]: {
+        shape: this.#shape,
+        color: this.#color,
+        description: this.#description,
+      },
+    };
+  }
 }
