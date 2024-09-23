@@ -10,45 +10,48 @@ import TagsPage from './pages/tagspage'
 import NavBar from './components/NavBar'
 import { useState } from 'react'
 import { ScanModalProvider } from './components/ScanModalContext'
+import { TagModalProvider } from './components/TagModalContext'
 
 function App () {
   const [showNav, setShowNav] = useState(true)
   return (
     <>
-      <ScanModalProvider>
-        {showNav ? <NavBar /> : <></>}
-        <Routes>
-          <Route path='/' element={<LoginPage setShowNav={setShowNav} />} />
-          <Route
-            path='/signuppage'
-            element={<SignupPage setShowNav={setShowNav} />}
-          />
-          <Route
-            path='/loginpage'
-            element={<LoginPage setShowNav={setShowNav} />}
-          />
-          {/* <Route
+      <TagModalProvider>
+        <ScanModalProvider>
+          {showNav ? <NavBar /> : <></>}
+          <Routes>
+            <Route path='/' element={<LoginPage setShowNav={setShowNav} />} />
+            <Route
+              path='/signuppage'
+              element={<SignupPage setShowNav={setShowNav} />}
+            />
+            <Route
+              path='/loginpage'
+              element={<LoginPage setShowNav={setShowNav} />}
+            />
+            {/* <Route
             path='/profilepage'
             element={<ProfilePage setShowNav={setShowNav} />}
           /> */}
-          <Route
-            path='/bookshelvespage'
-            element={<BookshelvesPage setShowNav={setShowNav} />}
-          />
-          <Route
-            path='/classroomspage'
-            element={<ClassroomsPage setShowNav={setShowNav} />}
-          />
-          <Route
-            path='/bookbagpage'
-            element={<BookbagPage setShowNav={setShowNav} />}
-          />
-          <Route
-            path='/tagspage'
-            element={<TagsPage setShowNav={setShowNav} />}
-          />
-        </Routes>
-      </ScanModalProvider>
+            <Route
+              path='/bookshelvespage'
+              element={<BookshelvesPage setShowNav={setShowNav} />}
+            />
+            <Route
+              path='/classroomspage'
+              element={<ClassroomsPage setShowNav={setShowNav} />}
+            />
+            <Route
+              path='/bookbagpage'
+              element={<BookbagPage setShowNav={setShowNav} />}
+            />
+            <Route
+              path='/tagspage'
+              element={<TagsPage setShowNav={setShowNav} />}
+            />
+          </Routes>
+        </ScanModalProvider>
+      </TagModalProvider>
     </>
   )
 }

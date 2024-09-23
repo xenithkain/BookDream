@@ -47,7 +47,7 @@ body {
 .BookshelvesPageContainer {
 }
 
-.ScanModalOverlay {
+.ModalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -93,6 +93,13 @@ body {
   width: 100%;
   height: 100%;
   background-color: rgb(213, 213, 213);
+}
+
+.TagRect{
+  width: fit-content;
+  height: 5%;
+  max-height: 100px;
+  min-height: 50px;
 }
 
 .BookTile {
