@@ -70,7 +70,6 @@ function ScanModal ({ isOpen, books, setBooks, setBookScanned }) {
         usersCollection,
         userDetails.$id,
         {
-          Name: userDetails.name,
           Books: newBooksString
         }
       )
@@ -154,10 +153,6 @@ function ScanModal ({ isOpen, books, setBooks, setBookScanned }) {
       setCurrentBook(null)
       setScanState('Not an ISBN Number')
     }
-  }
-
-  if (isBulk) {
-  } else {
   }
 
   if (!isScanModalOpen) return null
