@@ -21,7 +21,7 @@ function NavBar() {
       await account.deleteSession("current");
       navigate("/");
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -48,7 +48,7 @@ function NavBar() {
         setUserDetails(response);
       },
       (error) => {
-        console.log(error);
+        console.error(error);
       }
     );
   }, []);

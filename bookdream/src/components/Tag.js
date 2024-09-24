@@ -1,122 +1,65 @@
-class Tag {
-  // Private fields (start with #)
-  #name
-  #shape
-  #color
-  #description
-  #handleMouseDown
-  #handleMouseUp
-
-  constructor (
-    name = '',
-    shape = '',
-    color = '',
-    description = '',
-    handleMouseDown = () => {},
-    handleMouseUp = () => {}
-  ) {
-    this.#name = name
-    this.#shape = shape
-    this.#color = color
-    this.#description = description
-    this.#handleMouseDown = handleMouseDown
-    this.#handleMouseUp = handleMouseUp
-  }
-
-  get name () {
-    return this.#name
-  }
-
-  set name (newName) {
-    this.#name = newName
-  }
-
-  get shape () {
-    return this.#shape
-  }
-
-  set shape (newShape) {
-    this.#shape = newShape
-  }
-
-  get color () {
-    return this.#color
-  }
-
-  set color (newColor) {
-    this.#color = newColor
-  }
-
-  get description () {
-    return this.#description
-  }
-
-  set description (newDescription) {
-    this.#description = newDescription
-  }
-
-  returnJSON () {
-    return {
-      [this.#name]: {
-        shape: this.#shape,
-        color: this.#color,
-        description: this.#description
-      }
-    }
-  }
-
-  returnHTML () {
-    return (
-      <>
-        <div className='TagContainer'>
-          {this.#shape === 'Rect' ? (
-            <>
-              <div
-                className='TagRect'
-                style={{ backgroundColor: this.#color }}
-                onMouseDown={this.#handleMouseDown}
-                onMouseLeave={this.#handleMouseUp}
-                onMouseUp={this.#handleMouseUp}
-              >
-                <p>{this.#name}</p>
-              </div>
-            </>
-          ) : this.#shape === 'Oval' ? (
-            <></>
-          ) : this.#shape === 'Flag' ? (
-            <></>
-          ) : (
-            <></>
-          )}
+function Tag({
+  name,
+  shape,
+  color,
+  description,
+  textcolor,
+  handleMouseDown,
+  handleMouseUp,
+}) {
+  return (
+    <div className="TagContainer">
+      {shape === "Rect" ? (
+        <div
+          className="TagRect"
+          style={{ backgroundColor: color, color: textcolor }}
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseUp}
+          onMouseUp={handleMouseUp}
+        >
+          <p>{name}</p>
         </div>
-      </>
-    )
-  }
-
-  returnHTML() {
-    switch (this.#shape) {
-      case "flag":
-        return (
-          <>
-            <div></div>
-          </>
-        );
-      case "oval":
-        break;
-      case "rect":
-        break;
-    }
-  }
-
-  returnJSON() {
-    return {
-      [this.#name]: {
-        shape: this.#shape,
-        color: this.#color,
-        description: this.#description,
-      },
-    };
-  }
+      ) : shape === "Oval" ? (
+        <div
+          className="TagOval"
+          style={{
+            backgroundColor: color,
+            color: textcolor,
+            borderRadius: "50%",
+          }}
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseUp}
+          onMouseUp={handleMouseUp}
+        >
+          <p>{name}</p>
+        </div>
+      ) : shape === "Flag" ? (
+        <div
+          className="TagFlag"
+          style={{ backgroundColor: color, color: textcolor }}
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseUp}
+          onMouseUp={handleMouseUp}
+        >
+          <p>{name}</p>
+          <div
+            className="FlagTriangle"
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "100%",
+              width: "0",
+              height: "100%",
+              borderTop: "10px solid transparent", // Top transparent
+              borderBottom: "10px solid transparent", // Bottom transparent
+              borderLeft: `10px solid ${color}`, // Left border for the triangle
+              transform: "translateY(-50%)", // Center vertically
+            }}
+          />
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
-export default Tag
+export default Tag;
