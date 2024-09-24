@@ -27,7 +27,7 @@ export const removeTags = async (checkedTags) => {
 
       const filteredTags = databaseTags.filter((databaseTag) => {
         const tagName = databaseTag.name;
-        return !checkedTags.includes(tagName); // Only keep tags that are not checked
+        return !checkedTags.includes(tagName);
       });
 
       await databases.updateDocument(databaseKey, usersCollection, id, {
@@ -159,17 +159,12 @@ export const getBooks = async () => {
 
 export const checkForBook = async (currentBook, oldBooks) => {
   try {
-    const isbnExists = oldBooks.some((book) => {
+    return oldBooks.some((book) => {
       const isbn = Object.keys(book)[0];
       return isbn === currentBook.getIsbn();
     });
-    if (isbnExists) {
-      return true;
-    } else {
-      return false;
-    }
   } catch (e) {
     console.error("Error parsing JSON: " + e);
-    return null;
+    return false;
   }
 };

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import BookList from "../components/BookList";
-import { account } from "../appwrite/appwriteConfig";
 import ScanModal from "../components/ScanModal";
 import { useModal } from "../components/ScanModalContext";
-import { getBooks } from "../appwrite/appwriteConfig";
+import { getBooks, getTags, account } from "../appwrite/appwriteConfig";
+import Tag from "../components/Tag";
+import { sortList } from "../components/utility";
 
 function BookshelvesPage({ setShowNav }) {
   setShowNav(true);
@@ -13,14 +14,11 @@ function BookshelvesPage({ setShowNav }) {
   const [checkedCount, setCheckedCount] = useState();
   const [userDetails, setUserDetails] = useState();
   const [bookScanned, setBookScanned] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   const { isScanModalOpen, closeModal } = useModal();
-
-  // const onClick = (event) => {
-  //   console.log("setting select to false from Profile");
-  //   setSelectMode(false);
-  //   setCheckedBooks(0);
-  // };
 
   useEffect(() => {
     setCheckedCount(Object.values(checkedBooks).filter(Boolean).length);
@@ -40,6 +38,82 @@ function BookshelvesPage({ setShowNav }) {
     fetchBooks();
   }, [bookScanned, checkedBooks]);
 
+  useEffect(() => {
+    async function fetchTags() {
+      let sortedTags = await getTags();
+      sortList(sortedTags);
+      setTags(sortedTags);
+    }
+    fetchTags();
+  }, []);
+
+  const filteredBooks =
+    searchText && selectedTags.length > 0
+      ? books.filter((book) => {
+          let isbn = Object.keys(book)[0];
+          const bookData = book[isbn];
+          const titleMatches = bookData.title
+            .toLowerCase()
+            .includes(searchText.toLowerCase());
+          const authorMatches = bookData.authors.some((author) =>
+            author.toLowerCase().includes(searchText.toLowerCase())
+          );
+          const tagsMatch = selectedTags.every((tag) =>
+            bookData.tags.some((selectedTag) => selectedTag.name === tag.name)
+          );
+
+          return titleMatches && tagsMatch && authorMatches;
+        })
+      : searchText
+      ? books.filter((book) => {
+          let isbn = Object.keys(book)[0];
+          const bookData = book[isbn];
+          const titleMatches = bookData.title
+            .toLowerCase()
+            .includes(searchText.toLowerCase());
+          const authorMatches = bookData.authors.some((author) =>
+            author.toLowerCase().includes(searchText.toLowerCase())
+          );
+          return titleMatches || authorMatches;
+        })
+      : selectedTags.length > 0
+      ? books.filter((book) => {
+          let isbn = Object.keys(book)[0];
+          const bookData = book[isbn];
+
+          return selectedTags.every((tag) =>
+            bookData.tags.some((selectedTag) => selectedTag.name === tag.name)
+          );
+        })
+      : books;
+
+  const handleAddScanTag = (tagName) => {
+    const tagToAdd = tags.find((tag) => tag.name === tagName);
+    if (tagToAdd) {
+      const updatedTags = tags.filter((tag) => tag.name !== tagName);
+
+      const updatedSelectedTags = [...selectedTags, tagToAdd];
+      sortList(updatedTags);
+      sortList(updatedSelectedTags);
+      setTags(updatedTags);
+      setSelectedTags(updatedSelectedTags);
+    }
+  };
+
+  const handleRemoveScanTag = (tagName) => {
+    const tagToAdd = selectedTags.find((tag) => tag.name === tagName);
+    if (tagToAdd) {
+      const updatedSelectedTags = selectedTags.filter(
+        (tag) => tag.name !== tagName
+      );
+
+      const updatedTags = [...tags, tagToAdd];
+      sortList(updatedTags);
+      sortList(updatedSelectedTags);
+      setTags(updatedTags);
+      setSelectedTags(updatedSelectedTags);
+    }
+  };
   useEffect(() => {
     const getData = account.get();
     getData.then(
@@ -66,8 +140,61 @@ function BookshelvesPage({ setShowNav }) {
             />
           </div>
         )}
+        <div className="SearchContainer">
+          <div className="FormGroup">
+            <label htmlFor="Search">Search</label>
+            <input
+              type="text"
+              id="tag-search"
+              value={searchText}
+              style={{ border: "1px solid black", color: "black" }}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+              }}
+            />
+          </div>
+
+          <div className="ScanTagContainer">
+            <p>Tags to Add</p>
+            <div className="TagList">
+              {selectedTags.map((tag, index) => {
+                return (
+                  <div key={tag.name}>
+                    <Tag
+                      name={tag.name}
+                      shape={tag.shape}
+                      color={tag.color}
+                      textcolor={tag.textcolor}
+                      description={tag.description}
+                      handleMouseUp={() => handleRemoveScanTag(tag.name)}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="ScanTagContainer">
+            <p>Tags</p>
+            <div className="TagList">
+              {tags.map((tag, index) => {
+                return (
+                  <div key={tag.name}>
+                    <Tag
+                      name={tag.name}
+                      shape={tag.shape}
+                      color={tag.color}
+                      textcolor={tag.textcolor}
+                      description={tag.description}
+                      handleMouseUp={() => handleAddScanTag(tag.name)}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
         <BookList
-          books={books}
+          books={filteredBooks}
           setBooks={setBooks}
           selectMode={selectMode}
           setSelectMode={setSelectMode}

@@ -95,6 +95,27 @@ body {
   background-color: rgb(213, 213, 213);
 }
 
+.SearchContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.ScanTagContainer {
+  border: 1px solid black;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  justify-content: flex-start;
+}
+.TagList {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 5px;
+}
+
 .TagRect {
   width: 100%;
   max-width: 125px;

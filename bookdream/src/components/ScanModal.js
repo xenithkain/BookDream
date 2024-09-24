@@ -1,5 +1,5 @@
 import { useModal } from "../components/ScanModalContext";
-import { getBooks, checkForBook } from "../appwrite/appwriteConfig";
+import { getBooks, checkForBook, getTags } from "../appwrite/appwriteConfig";
 import {
   httpGetAsync,
   checkImageExists,
@@ -14,6 +14,8 @@ import {
   usersCollection,
   databaseKey,
 } from "../appwrite/appwriteConfig";
+import Tag from "./Tag";
+import { sortList } from "./utility";
 
 function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
   const { isScanModalOpen, closeModal, isBulk } = useModal();
@@ -22,12 +24,14 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
   const [scanState, setScanState] = useState("No Book Scanned");
   const [isbn, setIsbn] = useState("");
   const [scannedBooks, setScannedBooks] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   useEffect(() => {
     const handleKeyPress = (e) => {
       if (e.key === "Enter") {
         createBook(isbn);
-        setIsbn(""); // Clear buffer after processing
+        setIsbn("");
       } else if (e.key !== "Enter") {
         setIsbn((prevIsbn) => prevIsbn + e.key);
       }
@@ -75,7 +79,16 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
     if (currentBook) {
       handleBookUpload();
     }
-  }, [currentBook, handleBookUpload]);
+  }, [currentBook]);
+
+  useEffect(() => {
+    async function fetchTags() {
+      let sortedTags = await getTags();
+      sortList(sortedTags);
+      setTags(sortedTags);
+    }
+    fetchTags();
+  }, [isScanModalOpen]);
 
   useEffect(() => {
     const getData = account.get();
@@ -89,69 +102,100 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
     );
   }, [currentBook]);
 
-  const createBook = (isbn) => {
+  const createBook = async (isbn) => {
     if (isbn.length > 0 && (isbn.length === 10 || isbn.length === 13)) {
       let newBook = new Book();
+
+      // Fetch book details from OpenLibrary
       httpGetAsync(
         `https://openlibrary.org/isbn/${isbn}.json`,
         async (response) => {
           if (response) {
+            // Set book details from response
+            newBook.setIsbn(isbn);
+            newBook.setTitle(response.title || "No Title Given");
+            newBook.setGenres(response.genres || response.subjects || []);
             const urls = {
               Small: `https://covers.openlibrary.org/b/isbn/${isbn}-S.jpg`,
               Medium: `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`,
               Large: `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`,
             };
-            newBook.setIsbn(isbn);
-            newBook.setTitle(
-              response.title && response.title !== ""
-                ? response.title
-                : "No Title Given"
-            );
-            newBook.setGenres(
-              response.genres
-                ? response.genres
-                : response.subjects
-                ? response.subjects
-                : []
-            );
             const coverExists =
               (await checkImageExists(urls.Small)) ||
               (await checkImageExists(urls.Medium)) ||
               (await checkImageExists(urls.Large)) ||
               false;
             newBook.setCover(coverExists ? urls : "");
+
             if (response.authors) {
               const authors = await fetchAuthorNames(response.authors);
               newBook.setAuthors(authors);
             }
+            newBook.setTags(selectedTags);
+
+            // Get user books from database and check for duplicates
             let oldBooksString = await getBooks();
             let oldBooks = JSON.parse(oldBooksString) || [];
-            if (await checkForBook(newBook, oldBooks)) {
-              setCurrentBook(null);
+
+            const isDuplicate = await checkForBook(newBook, oldBooks);
+            if (isDuplicate) {
               setScanState("Book Already Exists");
               return;
             }
-            setCurrentBook(newBook);
-            setScannedBooks((prevScannedBooks) => {
-              if (prevScannedBooks.length >= 5) {
-                return [newBook, ...prevScannedBooks.slice(0, 4)];
-              }
-              return [newBook, ...prevScannedBooks];
-            });
 
-            setBookScanned(true);
-            handleBookUpload();
+            // Check against scanned books to prevent duplicates within the session
+            const alreadyScanned = scannedBooks.some(
+              (scannedBook) => scannedBook.getIsbn() === newBook.getIsbn()
+            );
+
+            if (!alreadyScanned) {
+              // Add to the current scanned books list
+              setScannedBooks((prevScannedBooks) => [
+                newBook,
+                ...prevScannedBooks,
+              ]);
+
+              // Save book to the database
+              setCurrentBook(newBook);
+              setBookScanned(true);
+            } else {
+              setScanState("Book Already Scanned in This Session");
+            }
           } else {
-            // Clear book details if no book found
-            setCurrentBook(null);
             setScanState("Book Not Found");
           }
         }
       );
     } else {
-      // Clear book details if not a valid ISBN
-      setCurrentBook(null);
-      setScanState("Not an ISBN Number");
+      setScanState("Invalid ISBN Number");
+    }
+  };
+
+  const handleAddScanTag = (tagName) => {
+    const tagToAdd = tags.find((tag) => tag.name === tagName);
+    if (tagToAdd) {
+      const updatedTags = tags.filter((tag) => tag.name !== tagName);
+
+      const updatedSelectedTags = [...selectedTags, tagToAdd];
+      sortList(updatedTags);
+      sortList(updatedSelectedTags);
+      setTags(updatedTags);
+      setSelectedTags(updatedSelectedTags);
+    }
+  };
+
+  const handleRemoveScanTag = (tagName) => {
+    const tagToAdd = selectedTags.find((tag) => tag.name === tagName);
+    if (tagToAdd) {
+      const updatedSelectedTags = selectedTags.filter(
+        (tag) => tag.name !== tagName
+      );
+
+      const updatedTags = [...tags, tagToAdd];
+      sortList(updatedTags);
+      sortList(updatedSelectedTags);
+      setTags(updatedTags);
+      setSelectedTags(updatedSelectedTags);
     }
   };
 
@@ -169,6 +213,44 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
           display: isScanModalOpen ? "block" : "none",
         }}
       >
+        <div className="ScanTagContainer">
+          <p>Tags to Add</p>
+          <div className="TagList">
+            {selectedTags.map((tag, index) => {
+              return (
+                <div key={tag.name}>
+                  <Tag
+                    name={tag.name}
+                    shape={tag.shape}
+                    color={tag.color}
+                    textcolor={tag.textcolor}
+                    description={tag.description}
+                    handleMouseUp={() => handleRemoveScanTag(tag.name)}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <div className="ScanTagContainer">
+          <p>Tags</p>
+          <div className="TagList">
+            {tags.map((tag, index) => {
+              return (
+                <div key={tag.name}>
+                  <Tag
+                    name={tag.name}
+                    shape={tag.shape}
+                    color={tag.color}
+                    textcolor={tag.textcolor}
+                    description={tag.description}
+                    handleMouseUp={() => handleAddScanTag(tag.name)}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
         {currentBook ? (
           currentBook.title + " was added to your bookshelf!"
         ) : (
@@ -178,7 +260,7 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
           {scannedBooks.length > 0 ? (
             scannedBooks.map((book, index) => {
               const isbn = Object.keys(book)[0];
-              return <BookTile book={book} />;
+              return <BookTile key={index} book={book} />;
             })
           ) : (
             <></>

@@ -87,15 +87,6 @@ function NavBar() {
           </button>
           <button
             className="NavBarPageButton"
-            style={getActiveStyle("/bookbagpage")}
-            onClick={() => {
-              navigate("/bookbagpage");
-            }}
-          >
-            Bookbag
-          </button>
-          <button
-            className="NavBarPageButton"
             style={getActiveStyle("/tagspage")}
             onClick={() => {
               navigate("/tagspage");

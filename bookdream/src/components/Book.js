@@ -1,9 +1,17 @@
 class Book {
-  constructor(title = "", authors = [], genres = [], cover = {}, isbn = "") {
+  constructor(
+    title = "",
+    authors = [],
+    genres = [],
+    cover = {},
+    tags = [],
+    isbn = ""
+  ) {
     this.title = title;
     this.authors = authors;
     this.genres = genres;
     this.cover = cover;
+    this.tags = tags;
     this.isbn = isbn;
   }
 
@@ -32,6 +40,10 @@ class Book {
     }
   }
 
+  getTags() {
+    return this.tags;
+  }
+
   getIsbn() {
     return this.isbn;
   }
@@ -52,6 +64,10 @@ class Book {
     this.cover = cover;
   }
 
+  setTags(tags) {
+    this.tags = tags;
+  }
+
   setIsbn(isbn) {
     this.isbn = isbn;
   }
@@ -63,6 +79,7 @@ class Book {
         authors: this.authors,
         genres: this.genres,
         cover: this.cover,
+        tags: this.tags,
       },
     };
   }

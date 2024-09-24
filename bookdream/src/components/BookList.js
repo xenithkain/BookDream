@@ -127,7 +127,7 @@ const BookList = ({
                     ? bookData.title
                     : bookData.title.slice(0, 40) + "..."}
                 </p>
-                <p>{bookData.authors[0]}</p>
+                <p style={{ fontWeight: "bold" }}>{bookData.authors[0]}</p>
               </div>
             );
           })}
