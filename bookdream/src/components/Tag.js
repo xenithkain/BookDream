@@ -1,63 +1,47 @@
+const shapeStyles = {
+  Rect: { borderRadius: "0" },
+  Oval: { borderRadius: "50%" },
+  Flag: {
+    borderRadius: "0",
+    position: "relative",
+    paddingRight: "10px",
+  },
+};
+
 function Tag({
   name,
   shape,
   color,
-  description,
   textcolor,
+  description,
   handleMouseDown,
   handleMouseUp,
 }) {
+  const currentStyle = shapeStyles[shape] || {};
   return (
-    <div className="TagContainer">
-      {shape === "Rect" ? (
+    <div
+      className={`Tag${shape}`}
+      style={{ backgroundColor: color, color: textcolor, ...currentStyle }}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+    >
+      <p>{name}</p>
+      {shape === "Flag" && (
         <div
-          className="TagRect"
-          style={{ backgroundColor: color, color: textcolor }}
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseUp}
-          onMouseUp={handleMouseUp}
-        >
-          <p>{name}</p>
-        </div>
-      ) : shape === "Oval" ? (
-        <div
-          className="TagOval"
+          className="FlagTriangle"
           style={{
-            backgroundColor: color,
-            color: textcolor,
-            borderRadius: "50%",
+            position: "absolute",
+            top: "50%",
+            left: "100%",
+            width: "0",
+            height: "100%",
+            borderTop: "10px solid transparent",
+            borderBottom: "10px solid transparent",
+            borderLeft: `10px solid ${color}`,
+            transform: "translateY(-50%)",
           }}
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseUp}
-          onMouseUp={handleMouseUp}
-        >
-          <p>{name}</p>
-        </div>
-      ) : shape === "Flag" ? (
-        <div
-          className="TagFlag"
-          style={{ backgroundColor: color, color: textcolor }}
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseUp}
-          onMouseUp={handleMouseUp}
-        >
-          <p>{name}</p>
-          <div
-            className="FlagTriangle"
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "100%",
-              width: "0",
-              height: "100%",
-              borderTop: "10px solid transparent", // Top transparent
-              borderBottom: "10px solid transparent", // Bottom transparent
-              borderLeft: `10px solid ${color}`, // Left border for the triangle
-              transform: "translateY(-50%)", // Center vertically
-            }}
-          />
-        </div>
-      ) : null}
+        />
+      )}
     </div>
   );
 }

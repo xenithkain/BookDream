@@ -3,22 +3,29 @@ import { useTagModal } from "./TagModalContext";
 import { useState } from "react";
 
 function TagModal({ onSave }) {
-  const { closeModal, isTagModalOpen } = useTagModal();
-  let [name, setName] = useState("");
-  let [description, setDescription] = useState("");
-  let [shape, setShape] = useState("");
-  let [color, setColor] = useState("");
+  const shapeOptions = ["Flag", "Rect", "Oval"];
 
-  let shapeOptions = ["Flag", "Oval", "Rect"];
+  const { closeModal, isTagModalOpen } = useTagModal();
+
+  const [modalFields, setModalFields] = useState({
+    name: "",
+    description: "",
+    shape: "",
+    color: "",
+  });
 
   const handleSave = () => {
-    onSave(name, shape, color, description);
+    onSave(
+      modalFields.name,
+      modalFields.shape,
+      modalFields.color,
+      modalFields.description
+    );
     closeModal();
   };
 
-  const handleColorChange = (e) => {
-    const selectedColor = e.target.value || "#000000";
-    setColor(selectedColor);
+  const updateField = (field, value) => {
+    setModalFields((prev) => ({ ...prev, [field]: value }));
   };
 
   if (!isTagModalOpen) return null;
@@ -34,8 +41,8 @@ function TagModal({ onSave }) {
           <input
             type="text"
             id="tag-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={modalFields.name}
+            onChange={(e) => updateField("name", e.target.value)}
           />
         </div>
 
@@ -45,8 +52,8 @@ function TagModal({ onSave }) {
           <input
             type="text"
             id="tag-description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={modalFields.description}
+            onChange={(e) => updateField("description", e.target.value)}
           />
         </div>
 
@@ -55,8 +62,8 @@ function TagModal({ onSave }) {
           <label htmlFor="TagShape">Shape</label>
           <select
             id="tag-shape"
-            value={shape}
-            onChange={(e) => setShape(e.target.value)}
+            value={modalFields.shape}
+            onChange={(e) => updateField("shape", e.target.value)}
           >
             {shapeOptions.map((option, index) => (
               <option key={index} value={option}>
@@ -72,8 +79,8 @@ function TagModal({ onSave }) {
           <input
             type="color"
             id="tag-color"
-            value={color || "#000000"}
-            onChange={handleColorChange}
+            value={modalFields.color}
+            onChange={(e) => updateField("color", e.target.value)}
           />
         </div>
 

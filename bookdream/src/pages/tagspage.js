@@ -1,90 +1,105 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import Tag from "../components/Tag";
-import * as op from "../openlibrary/openlibrary";
+import { getTags, addTag, removeTags } from "../appwrite/appwriteConfig";
 import { useTagModal } from "../components/TagModalContext";
 import TagModal from "../components/TagModal";
 
+const initialState = {
+  tags: [],
+  checkedTags: {},
+  checkedTagCount: 0,
+  selectMode: false,
+  startTime: null,
+};
+
+const tagReducer = (state, action) => {
+  switch (action.type) {
+    case "SET_TAGS":
+      return { ...state, tags: action.payload };
+
+    case "TOGGLE_TAG":
+      const newCheckedTags = {
+        ...state.checkedTags,
+        [action.payload]: !state.checkedTags[action.payload],
+      };
+      const newCheckedTagCount =
+        Object.values(newCheckedTags).filter(Boolean).length;
+      return {
+        ...state,
+        checkedTags: newCheckedTags,
+        checkedTagCount: newCheckedTagCount,
+      };
+    case "SET_SELECT_MODE":
+      return { ...state, selectMode: action.payload };
+    case "QUIT_SELECTION":
+      return {
+        ...state,
+        selectMode: false,
+        checkedTags: {},
+        checkedTagCount: 0,
+      };
+    case "SET_START_TIME":
+      return { ...state, startTime: action.payload };
+
+    case "CLEAR_START_TIME":
+      return { ...state, startTime: null };
+
+    default:
+      return state;
+  }
+};
+
 function TagsPage() {
-  let [tags, setTags] = useState([]);
-  let [checkedTags, setCheckedTags] = useState([]);
-  let [checkedTagCount, setCheckedTagCount] = useState(0);
-  let [selectMode, setSelectMode] = useState(false);
-  const [startTime, setStartTime] = useState(null);
-
   let { isTagModalOpen, closeModal, openModal } = useTagModal();
-
-  const fetchTags = async () => {
-    try {
-      const tagsString = await op.getTags();
-      const tagsArray = JSON.parse(tagsString);
-      if (Array.isArray(tagsArray)) {
-        setTags(tagsArray); // Set the tags only if it's an array
-      } else {
-        console.error("Fetched tags are not an array:", tagsArray);
-      }
-    } catch (error) {
-      console.error("Error fetching tags:", error);
-    }
-  };
+  const [state, dispatch] = useReducer(tagReducer, initialState);
 
   useEffect(() => {
     fetchTags();
-  }, [setTags]);
+  }, []);
 
-  useEffect(() => {
-    setCheckedTagCount(Object.values(checkedTags).filter(Boolean).length);
-  }, [checkedTags]);
+  const fetchTags = async () => {
+    const fetchedTags = await getTags();
+    dispatch({ type: "SET_TAGS", payload: fetchedTags });
+  };
+
+  const handleCheckboxChange = (name) => {
+    dispatch({ type: "TOGGLE_TAG", payload: name });
+  };
 
   const handleMouseDown = (event) => {
     event.stopPropagation();
-    const currentTime = new Date().getTime();
-    setStartTime(currentTime);
+    dispatch({ type: "SET_START_TIME", payload: new Date().getTime() });
   };
 
   const handleMouseUp = (event) => {
     event.stopPropagation();
+    const { startTime } = state; // Destructure from state
     if (startTime) {
       const currentTime = new Date().getTime();
       const duration = currentTime - startTime;
       const durationSeconds = duration / 1000;
       if (durationSeconds >= 0.5) {
-        setSelectMode(true);
+        dispatch({ type: "SET_SELECT_MODE", payload: true });
       }
-      setStartTime(null);
+      dispatch({ type: "CLEAR_START_TIME" });
     }
-  };
-  const handleCheckboxChange = (name) => {
-    setCheckedTags((prevCheckedTags) => {
-      const newCheckedValue = !prevCheckedTags[name];
-      if (newCheckedValue !== prevCheckedTags[name]) {
-        return {
-          ...prevCheckedTags,
-          [name]: newCheckedValue,
-        };
-      }
-      return prevCheckedTags;
-    });
   };
 
   const onSave = async (name, shape, color, description) => {
     try {
-      const colorToSave = color || "#000000";
-      const shapeToSave = shape || "Flag";
-      const nameToSave = name || "Blank";
-      const descriptionToSave = description || "No Description";
-      await op.addTag({
-        [nameToSave]: {
-          shape: shapeToSave,
-          color: colorToSave,
-          description: descriptionToSave,
-          textcolor: getContrastingTextColor(color),
-        },
-      });
+      const newTag = {
+        name: name,
+        shape: shape || "Flag",
+        color: color || "#000000",
+        description: description || "No Description",
+        textcolor: getContrastingTextColor(color),
+      };
 
-      // Fetch updated tags
-      const updatedTagsString = await op.getTags();
-      const updatedTags = JSON.parse(updatedTagsString);
-      setTags(updatedTags); // Update state with new tags
+      // Save the new tag in the backend
+      await addTag(newTag);
+
+      // Update the tags using the reducer
+      dispatch({ type: "SET_TAGS", payload: [...state.tags, newTag] });
     } catch (error) {
       console.error("Error saving tag:", error);
     }
@@ -106,9 +121,7 @@ function TagsPage() {
   };
 
   const handleQuitSelection = () => {
-    setSelectMode(false);
-    setCheckedTagCount(0);
-    setCheckedTags({});
+    dispatch({ type: "QUIT_SELECTION" });
   };
 
   const getContrastingTextColor = (hexColor) => {
@@ -120,9 +133,15 @@ function TagsPage() {
   };
 
   const handleDelete = async () => {
-    await op.removeTags(checkedTags);
+    const selectedTags = Object.keys(state.checkedTags).filter(
+      (tagName) => state.checkedTags[tagName]
+    );
+    await removeTags(selectedTags);
+    const updatedTags = state.tags.filter(
+      (tagObj) => !selectedTags.includes(tagObj.name)
+    );
+    dispatch({ type: "SET_TAGS", payload: updatedTags });
     handleQuitSelection();
-    fetchTags();
   };
 
   return (
@@ -132,29 +151,21 @@ function TagsPage() {
           <TagModal onSave={onSave}></TagModal>
         </div>
       )}
-      {selectMode ? (
-        <button className="SelectModeQuitButton" onClick={handleQuitSelection}>
-          x
-        </button>
-      ) : (
-        <></>
-      )}
+
       <button className="AddButton" onClick={openModal}>
         +
       </button>
       <div className="TagsContainer">
-        {tags.length > 0 ? (
-          tags.map((tagObj, index) => {
-            let tagName = Object.keys(tagObj)[0];
-            let tag = tagObj[tagName];
+        {state.tags.length > 0 ? (
+          state.tags.map((tagObj, index) => {
+            const tagName = tagObj.name;
             return (
               <div key={index}>
-                {selectMode ? (
+                {state.selectMode ? (
                   <input
                     type="checkbox"
-                    checked={checkedTags[tagName] || false}
+                    checked={state.checkedTags[tagName] || false}
                     onChange={() => {
-                      console.log(checkedTags);
                       handleCheckboxChange(tagName);
                     }}
                   />
@@ -163,10 +174,10 @@ function TagsPage() {
                 )}
                 <Tag
                   name={tagName}
-                  shape={tag.shape}
-                  color={tag.color}
-                  description={tag.description}
-                  textcolor={tag.textcolor}
+                  shape={tagObj.shape}
+                  color={tagObj.color}
+                  textcolor={tagObj.textcolor}
+                  description={tagObj.description}
                   handleMouseDown={handleMouseDown}
                   handleMouseUp={handleMouseUp}
                 />
@@ -176,7 +187,7 @@ function TagsPage() {
         ) : (
           <p>No tags available</p>
         )}
-        {selectMode && checkedTagCount > 0 ? (
+        {state.selectMode && state.checkedTagCount > 0 ? (
           <button className="DeleteButton" onClick={handleDelete}>
             Delete
           </button>

@@ -3,7 +3,7 @@ import BookList from "../components/BookList";
 import { account } from "../appwrite/appwriteConfig";
 import ScanModal from "../components/ScanModal";
 import { useModal } from "../components/ScanModalContext";
-import * as op from "../openlibrary/openlibrary";
+import { getBooks } from "../appwrite/appwriteConfig";
 
 function BookshelvesPage({ setShowNav }) {
   setShowNav(true);
@@ -25,7 +25,7 @@ function BookshelvesPage({ setShowNav }) {
   useEffect(() => {
     setCheckedCount(Object.values(checkedBooks).filter(Boolean).length);
     const fetchBooks = async () => {
-      const booksString = await op.getBooks();
+      const booksString = await getBooks();
       try {
         const books = JSON.parse(booksString) || []; // Safely parse JSON
         setBooks(books);

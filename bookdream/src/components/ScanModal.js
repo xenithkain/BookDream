@@ -1,5 +1,10 @@
 import { useModal } from "../components/ScanModalContext";
-import * as op from "../openlibrary/openlibrary";
+import { getBooks, checkForBook } from "../appwrite/appwriteConfig";
+import {
+  httpGetAsync,
+  checkImageExists,
+  fetchAuthorNames,
+} from "../openlibrary/openlibrary";
 import { useState, useEffect } from "react";
 import Book from "../components/Book";
 import BookTile from "./BookTile";
@@ -34,28 +39,9 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
       document.removeEventListener("keypress", handleKeyPress);
     };
   });
-
-  useEffect(() => {
-    if (currentBook) {
-      handleBookUpload();
-    }
-  }, [currentBook, handleBookUpload]);
-
-  useEffect(() => {
-    const getData = account.get();
-    getData.then(
-      (response) => {
-        setUserDetails(response);
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-  }, [currentBook]);
-
   const handleBookUpload = async () => {
     if (currentBook) {
-      let oldBooksString = await op.getBooks();
+      let oldBooksString = await getBooks();
       let oldBooks = JSON.parse(oldBooksString) || [];
       if (!Array.isArray(oldBooks)) {
         oldBooks = [];
@@ -85,10 +71,28 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
     }
   };
 
+  useEffect(() => {
+    if (currentBook) {
+      handleBookUpload();
+    }
+  }, [currentBook, handleBookUpload]);
+
+  useEffect(() => {
+    const getData = account.get();
+    getData.then(
+      (response) => {
+        setUserDetails(response);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }, [currentBook]);
+
   const createBook = (isbn) => {
     if (isbn.length > 0 && (isbn.length === 10 || isbn.length === 13)) {
       let newBook = new Book();
-      op.httpGetAsync(
+      httpGetAsync(
         `https://openlibrary.org/isbn/${isbn}.json`,
         async (response) => {
           if (response) {
@@ -111,18 +115,18 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
                 : []
             );
             const coverExists =
-              (await op.checkImageExists(urls.Small)) ||
-              (await op.checkImageExists(urls.Medium)) ||
-              (await op.checkImageExists(urls.Large)) ||
+              (await checkImageExists(urls.Small)) ||
+              (await checkImageExists(urls.Medium)) ||
+              (await checkImageExists(urls.Large)) ||
               false;
             newBook.setCover(coverExists ? urls : "");
             if (response.authors) {
-              const authors = await op.fetchAuthorNames(response.authors);
+              const authors = await fetchAuthorNames(response.authors);
               newBook.setAuthors(authors);
             }
-            let oldBooksString = await op.getBooks();
+            let oldBooksString = await getBooks();
             let oldBooks = JSON.parse(oldBooksString) || [];
-            if (await op.checkForBook(newBook, oldBooks)) {
+            if (await checkForBook(newBook, oldBooks)) {
               setCurrentBook(null);
               setScanState("Book Already Exists");
               return;

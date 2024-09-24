@@ -97,7 +97,11 @@ body {
 
 .TagRect {
   width: 100%;
+  max-width: 125px;
+  min-width: 100px;
   height: 100%;
+  text-align: center;
+  border-radius: 60px;
 }
 
 .BookTile {
