@@ -10,11 +10,9 @@ export const ScanModalProvider = ({ children }) => {
 
   const openModal = (x, y) => {
     setIsScanModalOpen(true);
-    console.log("setting modal open to true");
   };
 
   const closeModal = () => {
-    console.log("setting modal open to false");
     setIsScanModalOpen(false);
   };
 

@@ -37,7 +37,7 @@ function SignupPage({ setShowNav }) {
         navigate("/login");
       },
       (error) => {
-        console.log(error);
+        console.error(error);
       }
     );
   };

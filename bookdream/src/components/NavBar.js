@@ -21,7 +21,7 @@ function NavBar() {
       await account.deleteSession("current");
       navigate("/");
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -48,7 +48,7 @@ function NavBar() {
         setUserDetails(response);
       },
       (error) => {
-        console.log(error);
+        console.error(error);
       }
     );
   }, []);
@@ -84,15 +84,6 @@ function NavBar() {
             }}
           >
             Classrooms
-          </button>
-          <button
-            className="NavBarPageButton"
-            style={getActiveStyle("/bookbagpage")}
-            onClick={() => {
-              navigate("/bookbagpage");
-            }}
-          >
-            Bookbag
           </button>
           <button
             className="NavBarPageButton"

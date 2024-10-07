@@ -30,7 +30,7 @@ body {
   padding: 20px;
 }
 
-.AddButton{
+.AddButton {
   border: 1.5px solid black;
   border-radius: 50%;
   height: 4vh;
@@ -40,15 +40,14 @@ body {
   align-items: center;
   margin-right: 10%;
   font-size: 2rem;
-  font-weight:bold;
+  font-weight: bold;
   text-align: center;
 }
 
-.BookshelvesPageContainer{
-
+.BookshelvesPageContainer {
 }
 
-.ScanModalOverlay {
+.ModalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -60,16 +59,16 @@ body {
   align-items: center;
 }
 
-.BookTileInformation{
+.BookTileInformation {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  overflow: hidden; 
+  overflow: hidden;
   text-align: center;
   word-wrap: break-word;
 }
 
-.ScanModelContainer{
+.ScanModelContainer {
   height: 95vh;
   width: 50vw;
   border: 2px solid black;
@@ -90,12 +89,41 @@ body {
   flex-wrap: wrap;
   justify-content: flex-start;
   padding: 10px;
-  gap:5px;
+  gap: 5px;
   width: 100%;
   height: 100%;
   background-color: rgb(213, 213, 213);
 }
 
+.SearchContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.ScanTagContainer {
+  border: 1px solid black;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  justify-content: flex-start;
+}
+.TagList {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 5px;
+}
+
+.TagRect {
+  width: 100%;
+  max-width: 125px;
+  min-width: 100px;
+  height: 100%;
+  text-align: center;
+  border-radius: 60px;
+}
 
 .BookTile {
   display: flex;
@@ -115,7 +143,6 @@ body {
   align-items: center;
   justify-content: center;
 }
-
 
 .BookTileImage {
   height: 65%;
@@ -147,20 +174,20 @@ body {
   gap: 5px;
 }
 
-.SelectModeQuitButton{
+.SelectModeQuitButton {
   height: 2vw;
   width: 3vw;
   background-color: rgb(92, 92, 92);
   border: 2px solid black;
   border-radius: 50%;
 }
-.SelectModeQuitButton:hover{
+.SelectModeQuitButton:hover {
   background-color: gray;
 }
 
-.ScannedBooksContainer{
-  height:90%;
-  width:100%;
+.ScannedBooksContainer {
+  height: 90%;
+  width: 100%;
 
   display: flex;
   flex-direction: column;
@@ -169,7 +196,7 @@ body {
   overflow-y: hidden;
 }
 
-.BookTileContainer{
+.BookTileContainer {
   height: 18%;
   width: 40%;
   font-size: 1rem;
@@ -181,7 +208,7 @@ body {
   border-radius: 10px;
 }
 
-.BookAdditionsModalContainer{
+.BookAdditionsModalContainer {
   height: fit-content;
   width: fit-content;
   position: absolute;
@@ -266,6 +293,33 @@ header {
   display: flex;
   justify-content: center;
   font-weight: bold;
+}
+
+.TagsContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-self: center;
+  align-self: flex-start;
+  border: 0.5px solid black;
+  gap: 10px;
+  padding: 5px;
+}
+
+.TagContainer {
+  width: 20%;
+  height: 100%;
+  max-width: 150px;
+  min-width: 100px;
+  text-align: center;
+  border: 1px solid black;
+}
+
+.TagFlag {
+  position: relative;
+  display: inline-block;
+  height: 100%;
+  width: 100%;
 }
 
 .Logout {

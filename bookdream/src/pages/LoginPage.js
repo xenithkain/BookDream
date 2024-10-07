@@ -17,7 +17,7 @@ function LoginPage({ setShowNav }) {
       await account.createEmailPasswordSession(user.email, user.password);
       navigate("/bookshelvespage");
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
   return (
