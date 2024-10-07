@@ -1,88 +1,87 @@
 class Book {
-  constructor(
-    title = "",
+  constructor (
+    title = '',
     authors = [],
     genres = [],
-    cover = {},
+    cover = [],
     tags = [],
-    isbn = ""
+    isbn = ''
   ) {
-    this.title = title;
-    this.authors = authors;
-    this.genres = genres;
-    this.cover = cover;
-    this.tags = tags;
-    this.isbn = isbn;
+    this.title = title
+    this.authors = authors
+    this.genres = genres
+    this.cover = cover
+    this.tags = tags
+    this.isbn = isbn
   }
 
-  getTitle() {
-    return this.title;
+  getTitle () {
+    return this.title
   }
 
-  getAuthors() {
-    return this.authors;
+  getAuthors () {
+    return this.authors
   }
 
-  getGenres() {
-    return this.genres;
+  getGenres () {
+    return this.genres
   }
 
-  getCover(size) {
-    if (size === "Small") {
-      return this.cover.Small;
-    } else if (size === "Medium") {
-      return this.cover.Medium;
-    } else if (size === "Large") {
-      return this.cover.Large;
+  getCover (size) {
+    if (size === 'Small') {
+      return this.cover[0]
+    } else if (size === 'Medium') {
+      return this.cover[1]
+    } else if (size === 'Large') {
+      return this.cover[2]
     } else {
-      console.error("Not a correct Size");
-      return null;
+      console.error('Not a correct Size')
+      return null
     }
   }
 
-  getTags() {
-    return this.tags;
+  getTags () {
+    return this.tags
   }
 
-  getIsbn() {
-    return this.isbn;
+  getIsbn () {
+    return this.isbn
   }
 
-  setTitle(title) {
-    this.title = title;
+  setTitle (title) {
+    this.title = title
   }
 
-  setAuthors(authors) {
-    this.authors = authors;
+  setAuthors (authors) {
+    this.authors = authors
   }
 
-  setGenres(genres) {
-    this.genres = genres;
+  setGenres (genres) {
+    this.genres = genres
   }
 
-  setCover(cover) {
-    this.cover = cover;
+  setCover (cover) {
+    this.cover = cover
   }
 
-  setTags(tags) {
-    this.tags = tags;
+  setTags (tags) {
+    this.tags = tags
   }
 
-  setIsbn(isbn) {
-    this.isbn = isbn;
+  setIsbn (isbn) {
+    this.isbn = isbn
   }
 
-  returnJson() {
+  returnJson () {
     return {
-      [this.isbn]: {
-        title: this.title,
-        authors: this.authors,
-        genres: this.genres,
-        cover: this.cover,
-        tags: this.tags,
-      },
-    };
+      title: this.title,
+      authors: this.authors,
+      genres: this.genres,
+      covers: this.cover,
+      tags: this.tags,
+      isbn: this.isbn
+    }
   }
 }
 
-export default Book;
+export default Book
