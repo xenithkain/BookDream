@@ -95,6 +95,15 @@ body {
   background-color: rgb(213, 213, 213);
 }
 
+.BookTiles {
+  display: flex;
+  flex-direction: row;
+}
+
+.BookTile.selected {
+  background-color: rgb(201, 201, 201);
+}
+
 .SearchContainer {
   display: flex;
   flex-direction: row;

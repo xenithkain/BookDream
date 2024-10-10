@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import BookOptionsModal from './BookOptionsModal'
-import { removeBooks } from '../appwrite/appwriteConfig'
+import React, { useState } from "react";
+import BookOptionsModal from "./BookOptionsModal";
+import { removeBooks } from "../appwrite/appwriteConfig";
 
 const BookList = ({
   books,
@@ -10,70 +10,71 @@ const BookList = ({
   checkedCount,
   setCheckedCount,
   checkedBooks,
-  setCheckedBooks
+  setCheckedBooks,
 }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [mousPos, setMousePos] = useState({ x: 0, y: 0 })
-  const [startTime, setStartTime] = useState(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const [mousPos, setMousePos] = useState({ x: 0, y: 0 });
+  const [startTime, setStartTime] = useState(null);
 
-  const handleMouseDown = event => {
-    event.stopPropagation()
-    const currentTime = new Date().getTime()
-    setStartTime(currentTime)
-  }
+  const handleMouseDown = (event) => {
+    event.stopPropagation();
+    const currentTime = new Date().getTime();
+    setStartTime(currentTime);
+  };
 
-  const handleMouseUp = event => {
-    event.stopPropagation()
+  const handleMouseUp = (event) => {
+    event.stopPropagation();
     if (startTime) {
-      const currentTime = new Date().getTime()
-      const duration = currentTime - startTime
-      const durationSeconds = duration / 1000
+      const currentTime = new Date().getTime();
+      const duration = currentTime - startTime;
+      const durationSeconds = duration / 1000;
       if (durationSeconds >= 0.5) {
-        setSelectMode(true)
+        setSelectMode(true);
       } else if (durationSeconds < 0.5) {
         if (!selectMode) {
           if (!isOpen) {
-            setIsOpen(true)
-            setMousePos({ x: event.clientX, y: event.clientY })
+            setIsOpen(true);
+            setMousePos({ x: event.clientX, y: event.clientY });
           } else {
-            setIsOpen(false)
+            setIsOpen(false);
           }
         }
       }
-      setStartTime(null)
+      setStartTime(null);
     }
-  }
+  };
 
   const handleQuitSelection = () => {
-    setSelectMode(false)
-    setCheckedCount(0)
-    setCheckedBooks({})
-  }
+    setSelectMode(false);
+    setCheckedCount(0);
+    setCheckedBooks({});
+  };
 
   const onClose = () => {
-    setIsOpen(false)
-  }
-  const handleCheckboxChange = isbn => {
-    setCheckedBooks(prevCheckedBooks => {
-      const newCheckedValue = !prevCheckedBooks[isbn]
-      if (newCheckedValue !== prevCheckedBooks[isbn]) {
+    setIsOpen(false);
+  };
+  const handleCheckboxChange = (book) => {
+    let id = book.$id;
+    setCheckedBooks((prevCheckedBooks) => {
+      const newCheckedValue = !prevCheckedBooks[id];
+      if (newCheckedValue !== prevCheckedBooks[id]) {
         // Check for change
         return {
           ...prevCheckedBooks,
-          [isbn]: newCheckedValue
-        }
+          [id]: newCheckedValue,
+        };
       }
-      return prevCheckedBooks // No change, return previous state
-    })
-  }
+      return prevCheckedBooks; // No change, return previous state
+    });
+  };
 
   return (
     <>
       {books && books.length > 0 ? (
-        <div className='BookList'>
+        <div className="BookList">
           {selectMode ? (
             <button
-              className='SelectModeQuitButton'
+              className="SelectModeQuitButton"
               onClick={handleQuitSelection}
             >
               x
@@ -83,10 +84,11 @@ const BookList = ({
           )}
           {checkedCount > 0 ? <p>{checkedCount} Books Selected</p> : <></>}
           {books.map((book, index) => {
-            const isbn = book.isbn
+            const isbn = book.isbn;
+            const id = book.$id;
             return (
               <div
-                className='BookTile'
+                className="BookTile"
                 key={isbn}
                 onMouseDown={handleMouseDown}
                 onMouseLeave={handleMouseUp}
@@ -94,9 +96,9 @@ const BookList = ({
               >
                 {selectMode ? (
                   <input
-                    type='checkbox'
-                    checked={checkedBooks[isbn] || false}
-                    onChange={() => handleCheckboxChange(isbn)}
+                    type="checkbox"
+                    checked={checkedBooks[id] || false}
+                    onChange={() => handleCheckboxChange(book)}
                   />
                 ) : (
                   <></>
@@ -110,39 +112,42 @@ const BookList = ({
                 />
                 {book.covers[1] ? (
                   <img
-                    className='BookTileImage'
+                    className="BookTileImage"
                     src={book.covers[1]}
-                    alt='book_image'
+                    alt="book_image"
                   />
                 ) : (
                   <img
-                    className='BookTileImage'
-                    src='/open-book.png'
-                    alt='book_image'
+                    className="BookTileImage"
+                    src="/open-book.png"
+                    alt="book_image"
                   />
                 )}
                 <p>
                   {book.title.length < 40
                     ? book.title
-                    : book.title.slice(0, 40) + '...'}
+                    : book.title.slice(0, 40) + "..."}
                 </p>
-                <p style={{ fontWeight: 'bold' }}>{book.authors[0]}</p>
+                <p style={{ fontWeight: "bold" }}>{book.authors[0]}</p>
               </div>
-            )
+            );
           })}
           {selectMode && checkedCount > 0 ? (
             <button
-              className='DeleteButton'
-              onClick={() =>
+              className="DeleteButton"
+              onClick={() => {
+                const selectedBookIds = Object.keys(checkedBooks).filter(
+                  (bookId) => checkedBooks[bookId] === true
+                );
                 removeBooks(
-                  checkedBooks,
+                  selectedBookIds,
                   setBooks,
                   checkedCount,
                   setCheckedCount,
                   setSelectMode,
                   setCheckedBooks
-                )
-              }
+                );
+              }}
             >
               Delete
             </button>
@@ -154,7 +159,7 @@ const BookList = ({
         <p>No books found</p>
       )}
     </>
-  )
-}
+  );
+};
 
-export default BookList
+export default BookList;

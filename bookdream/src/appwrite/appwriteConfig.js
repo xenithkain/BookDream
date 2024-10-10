@@ -1,112 +1,112 @@
-import { Client, Databases, Account, Query } from 'appwrite'
+import { Client, Databases, Account, Query, ID } from "appwrite";
 
-const client = new Client()
+const client = new Client();
 client
-  .setEndpoint('https://cloud.appwrite.io/v1')
-  .setProject('66d8d3da001d5a4c82bb')
-export const databaseKey = '66d8d504002297d3436f'
-export const account = new Account(client)
+  .setEndpoint("https://cloud.appwrite.io/v1")
+  .setProject("66d8d3da001d5a4c82bb");
+export const databaseKey = "66d8d504002297d3436f";
+export const account = new Account(client);
 
-export const databases = new Databases(client, databaseKey)
+export const databases = new Databases(client, databaseKey);
 
-export const usersCollection = '66d8d5a90031df9dac29'
-export const booksCollection = '67041ebc0032746cbba0'
-export const studentsCollection = '67041ec0003da6255395'
-export const classroomsCollection = '67041b1e000e47af29b6'
-export const classroombooksCollection = '67041dce002bd96e7527'
+export const usersCollection = "66d8d5a90031df9dac29";
+export const booksCollection = "67041ebc0032746cbba0";
+export const studentsCollection = "67041ec0003da6255395";
+export const classroomsCollection = "67041b1e000e47af29b6";
+export const classroombooksCollection = "67041dce002bd96e7527";
 
-export const removeTags = async checkedTags => {
+export const removeTags = async (checkedTags) => {
   try {
-    const accountData = await getAccount()
-    const id = accountData.$id
+    const accountData = await getAccount();
+    const id = accountData.$id;
 
     const userDocument = await databases.getDocument(
       databaseKey,
       usersCollection,
       id
-    )
+    );
 
     if (userDocument.Tags) {
-      let databaseTags = JSON.parse(userDocument.Tags)
+      let databaseTags = JSON.parse(userDocument.Tags);
 
-      const filteredTags = databaseTags.filter(databaseTag => {
-        const tagName = databaseTag.name
-        return !checkedTags.includes(tagName)
-      })
+      const filteredTags = databaseTags.filter((databaseTag) => {
+        const tagName = databaseTag.name;
+        return !checkedTags.includes(tagName);
+      });
 
       await databases.updateDocument(databaseKey, usersCollection, id, {
-        Tags: JSON.stringify(filteredTags)
-      })
+        Tags: JSON.stringify(filteredTags),
+      });
     }
   } catch (error) {
-    console.error('Error deleting tag:', error)
+    console.error("Error deleting tag:", error);
   }
-}
+};
 
-export const addTag = async tag => {
+export const addTag = async (tag) => {
   try {
-    let userDetails = await getAccount()
-    let oldTags = await getTags()
+    let userDetails = await getAccount();
+    let oldTags = await getTags();
     if (!Array.isArray(oldTags)) {
-      oldTags = []
+      oldTags = [];
     }
-    oldTags.push(tag)
-    const newTagsString = JSON.stringify(oldTags)
+    oldTags.push(tag);
+    const newTagsString = JSON.stringify(oldTags);
     const promise = databases.updateDocument(
       databaseKey,
       usersCollection,
       userDetails.$id,
       {
-        Tags: newTagsString
+        Tags: newTagsString,
       }
-    )
+    );
     promise.then(
-      response => {
-        console.log('Tag saved:', response.Tags)
+      (response) => {
+        console.log("Tag saved:", response.Tags);
       },
-      error => {
-        console.error('Error saving Tag:', error)
+      (error) => {
+        console.error("Error saving Tag:", error);
       }
-    )
+    );
   } catch (error) {
-    console.error('Error creating tag: ', error)
+    console.error("Error creating tag: ", error);
   }
-}
+};
 
 export const getTags = async () => {
   try {
-    const accountData = await getAccount()
+    const accountData = await getAccount();
     const userDocument = await databases.getDocument(
       databaseKey,
       usersCollection,
       accountData.$id
-    )
+    );
 
-    let tagsArray
+    let tagsArray;
     userDocument?.Tags
       ? (tagsArray = JSON.parse(userDocument.Tags))
-      : (tagsArray = [])
+      : (tagsArray = []);
 
     if (Array.isArray(tagsArray)) {
-      return tagsArray
+      return tagsArray;
     } else {
-      console.error('Fetched tags are not an array:', tagsArray)
+      console.error("Fetched tags are not an array:", tagsArray);
     }
   } catch (error) {
-    console.error('Error fetching user document: ', error)
-    return []
+    console.error("Error fetching user document: ", error);
+    return [];
   }
-}
+};
 
 export const getAccount = async () => {
   try {
-    const response = await account.get() // Use await here
-    return response // Return the resolved value
+    const response = await account.get(); // Use await here
+    return response; // Return the resolved value
   } catch (error) {
-    console.error('Error fetching account:', error)
-    throw error // Rethrow the error so it can be caught where needed
+    console.error("Error fetching account:", error);
+    throw error; // Rethrow the error so it can be caught where needed
   }
-}
+};
 
 export const removeBooks = async (
   books,
@@ -117,108 +117,212 @@ export const removeBooks = async (
   setCheckedBooks
 ) => {
   try {
-    const accountData = await getAccount() // Ensure getAccount() is awaited properly
-    const id = accountData.$id // Now you can access $id safely
+    const accountData = await getAccount();
 
-    const userDocument = await databases.getDocument(
-      databaseKey,
-      usersCollection,
-      id
-    )
-    if (userDocument.Books) {
-      let databaseBooks = JSON.parse(userDocument.Books) // Make sure you are parsing the correct field
-      const filteredBooks = databaseBooks.filter(databaseBook => {
-        const isbn = Object.keys(databaseBook)[0] // Extract the ISBN from the book object
-        return !books[isbn] // Return true if the book is not marked for removal
-      })
-      setBooks(filteredBooks)
-      setCheckedCount(0)
-      setSelectMode(false)
-      setCheckedBooks({})
-      // books = books.filter(book => !book.hasOwnProperty(isbn))
-      // Save the updated books back to the database
-      await databases.updateDocument(databaseKey, usersCollection, id, {
-        Books: JSON.stringify(filteredBooks)
-      })
-    }
-  } catch (error) {
-    console.error('Error deleting book:', error)
-  }
-}
-
-export const getBooks = async () => {
-  try {
-    // Get the current user's account details
-    const accountData = await getAccount()
-
-    // Fetch the user's document to get the list of book IDs
     const userDocument = await databases.getDocument(
       databaseKey,
       usersCollection,
       accountData.$id
-    )
+    );
 
     if (!userDocument.books || userDocument.books.length === 0) {
-      console.log('No books found for this user.')
-      return [] // Return an empty array if the user has no books
+      console.log("No books found for this user.");
+      return;
     }
 
-    // Fetch all books by their IDs from the Books collection
-    const bookPromises = userDocument.books.map(book =>
+    const bookPromises = userDocument.books.map((book) =>
       databases.getDocument(databaseKey, booksCollection, book.$id)
-    )
+    );
 
-    // Resolve all the promises to get the full list of books
-    const userBooks = await Promise.all(bookPromises)
+    const userBooks = await Promise.all(bookPromises);
 
-    // Return the list of books
-    return userBooks
+    let updatedBooks = userBooks.filter((book) => !books.includes(book.$id));
+
+    const response = await databases.updateDocument(
+      databaseKey,
+      usersCollection,
+      accountData.$id,
+      {
+        books: updatedBooks,
+      }
+    );
+    setBooks(updatedBooks);
+    setCheckedBooks([]);
+    setCheckedCount(0);
+    setSelectMode(false);
   } catch (error) {
-    console.error('Error fetching user books:', error)
-    return [] // Return an empty array in case of error
+    console.error("Error deleting book:", error);
   }
-}
+};
 
-export const checkForBook = async isbn => {
+export const getBooks = async () => {
+  try {
+    const accountData = await getAccount();
+
+    const userDocument = await databases.getDocument(
+      databaseKey,
+      usersCollection,
+      accountData.$id
+    );
+
+    if (!userDocument.books || userDocument.books.length === 0) {
+      console.log("No books found for this user.");
+      return [];
+    }
+
+    const bookPromises = userDocument.books.map((book) =>
+      databases.getDocument(databaseKey, booksCollection, book.$id)
+    );
+
+    const userBooks = await Promise.all(bookPromises);
+
+    return userBooks;
+  } catch (error) {
+    console.error("Error fetching user books:", error);
+    return [];
+  }
+};
+
+export const checkForBook = async (isbn) => {
   try {
     const response = await databases.listDocuments(
       databaseKey,
       booksCollection,
-      [Query.equal('isbn', isbn)]
-    )
-
-    return response.documents > 0
+      [Query.equal("isbn", isbn)]
+    );
+    if (response.documents.length > 0) {
+      return response.documents[0];
+    }
+    return null;
   } catch (e) {
-    console.error('Error fetching Books: ' + e)
-    return false
+    console.error("Error fetching Books: " + e);
+    return false;
   }
-}
+};
 
-export const checkIfUserHasBook = async isbn => {
+export const createClassroomDB = async (classroom) => {
   try {
-    const accountData = await getAccount()
+    // Create the classroom in the database
+    const response = await databases.createDocument(
+      databaseKey,
+      classroomsCollection,
+      ID.unique(),
+      {
+        name: classroom.name,
+        books: classroom.books,
+      }
+    );
+
+    console.log("Classroom created in DB:", response);
+
+    // Update the classrooms attribute of each chosen book
+    await Promise.all(
+      classroom.books.map(async (bookId) => {
+        try {
+          // Fetch the existing book document
+          const bookDocument = await databases.getDocument(
+            databaseKey,
+            booksCollection,
+            bookId
+          );
+
+          // Initialize updatedClassrooms if it doesn't exist
+          const updatedClassrooms = Array.isArray(bookDocument.classrooms)
+            ? bookDocument.classrooms
+            : [];
+
+          // Avoid adding duplicates
+          if (!updatedClassrooms.includes(response.$id)) {
+            // Add the new classroom ID to the classrooms array
+            updatedClassrooms.push(response.$id);
+            // Update the book document with the new classrooms array
+            await databases.updateDocument(
+              databaseKey,
+              booksCollection,
+              bookId,
+              {
+                classrooms: updatedClassrooms,
+              }
+            );
+
+            console.log(
+              `Updated book with ID ${bookId} to include new classroom.`
+            );
+          } else {
+            console.log(`Book with ID ${bookId} already has this classroom.`);
+          }
+        } catch (error) {
+          console.error(`Error updating book ${bookId}:`, error);
+        }
+      })
+    );
+  } catch (error) {
+    console.error("Error creating classroom in DB:", error);
+  }
+};
+
+export const fetchClassrooms = async () => {
+  try {
+    const response = await databases.listDocuments(
+      databaseKey,
+      classroomsCollection
+    );
+    if (response.documents.length > 0) {
+      return response.documents;
+    } else {
+      return [];
+    }
+  } catch (e) {
+    console.error("Error fetching classrooms:", e);
+    return [];
+  }
+};
+
+export const fetchAvailableBooks = async () => {
+  try {
+    const response = await databases.listDocuments(
+      databaseKey,
+      booksCollection
+    );
+    const availableBooks = response.documents.filter(
+      (book) => !book.classrooms || book.classrooms.length === 0
+    );
+
+    console.log("Fetched books:", availableBooks); // Log filtered available books
+
+    return availableBooks; // Return the filtered array of books
+  } catch (error) {
+    console.error("Error fetching available books:", error);
+    return [];
+  }
+};
+
+export const checkIfUserHasBook = async (isbn) => {
+  try {
+    const accountData = await getAccount();
     const userDocument = await databases.getDocument(
       databaseKey,
       usersCollection,
       accountData.$id
-    )
+    );
 
     if (!userDocument.books || userDocument.books.length === 0) {
-      console.log('No books found for user.')
-      return false // No books exist
+      console.log("No books found for user.");
+      return null; // No books exist
     }
-    const userBooksPromises = userDocument.books.map(bookId =>
-      databases.getDocument(databaseKey, booksCollection, bookId)
-    )
-    const userBooks = await Promise.all(userBooksPromises)
 
-    // Check if the ISBN exists in the user's book collection
-    const bookExists = userBooks.some(book => book.isbn === isbn)
+    const userBooksPromises = userDocument.books.map((book) =>
+      databases.getDocument(databaseKey, booksCollection, book.$id)
+    );
+    const userBooks = await Promise.all(userBooksPromises);
 
-    console.log('Book exists:', bookExists)
-    return bookExists
+    // Find the book with the specified ISBN
+    const foundBook = userBooks.find((book) => book.isbn === isbn);
+
+    console.log("Book found:", foundBook);
+    return foundBook || null; // Return the book if found, otherwise null
   } catch (error) {
-    console.error('Error checking if book exists:', error)
-    return false
+    console.error("Error checking if book exists:", error);
+    return null; // Return null in case of an error
   }
-}
+};
