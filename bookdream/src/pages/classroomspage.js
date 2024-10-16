@@ -17,52 +17,87 @@ function ClassroomsPage() {
   const [userDetails, setUserDetails] = useState();
   const [availableBooks, setAvailableBooks] = useState([]);
   const [classrooms, setClassrooms] = useState([]);
+  const [selectMode, setSelectMode] = useState(false);
+  const [checkedClassrooms, setCheckedClassrooms] = useState({});
+  const [checkedCount, setCheckedCount] = useState();
+  const [isOpen, setIsOpen] = useState(false);
+  const [startTime, setStartTime] = useState(null);
 
+  useEffect(() => {
+    setCheckedCount(Object.values(checkedClassrooms).filter(Boolean).length);
+  }, [checkedClassrooms]);
+
+  const handleMouseDown = (event) => {
+    event.stopPropagation();
+    const currentTime = new Date().getTime();
+    setStartTime(currentTime);
+  };
+
+  const handleMouseUp = (event) => {
+    event.stopPropagation();
+    if (startTime) {
+      const currentTime = new Date().getTime();
+      const duration = currentTime - startTime;
+      const durationSeconds = duration / 1000;
+      if (durationSeconds >= 0.5) {
+        setSelectMode(true);
+      }
+      setStartTime(null);
+    }
+  };
   const handleAddClassroomClick = () => {
     openModal();
   };
-
+  const handleCheckboxChange = (classroom) => {
+    let id = classroom.id;
+    setCheckedClassrooms((prevCheckedClassrooms) => {
+      const newCheckedValue = !prevCheckedClassrooms[id];
+      if (newCheckedValue !== prevCheckedClassrooms[id]) {
+        // Check for change
+        return {
+          ...prevCheckedClassrooms,
+          [id]: newCheckedValue,
+        };
+      }
+      return prevCheckedClassrooms; // No change, return previous state
+    });
+  };
+  const getAvailableBooks = async () => {
+    const books = await fetchAvailableBooks();
+    setAvailableBooks(books);
+  };
+  const getClassrooms = async () => {
+    const c = await fetchClassrooms();
+    console.log(c);
+    setClassrooms(c);
+  };
   useEffect(() => {
-    const getAvailableBooks = async () => {
-      const books = await fetchAvailableBooks();
-      setAvailableBooks(books);
-    };
-
-    const getClassrooms = async () => {
-      const c = await fetchClassrooms();
-      setClassrooms(c);
-    };
-
     getAvailableBooks();
     getClassrooms(); // Fetch classrooms on initial load
   }, []);
 
   const createClassroom = async (name, color, chosenBooks) => {
-    // Check if a classroom with the same name already exists
     const classroomExists = classrooms.some(
-      (classroom) => classroom._name === name
+      (classroom) => classroom.name === name
     );
 
     if (classroomExists) {
       console.log("Classroom already exists:", name);
-      return; // Exit the function if the classroom already exists
+      return;
     }
 
-    let c = new Classroom(name, [], chosenBooks);
-    console.log("Current Classrooms:", classrooms);
-    console.log("New Classroom:", c);
+    let newClassroom = new Classroom("", name, [], chosenBooks);
+    console.log("New classroom:", newClassroom.name, newClassroom.books);
+    newClassroom = await createClassroomDB(newClassroom); // Update with returned classroom
 
-    // Update local state
-    setClassrooms((prevClassrooms) => {
-      console.log("Prev Classrooms:", prevClassrooms);
-      const updatedClassrooms = [...prevClassrooms, c];
-      console.log("New Classrooms:", updatedClassrooms);
-      return updatedClassrooms;
-    });
+    if (newClassroom) {
+      console.log("Updated Classroom:", newClassroom);
 
-    // Add the classroom to the database
-    await createClassroomDB(c); // Ensure this is awaited for consistency
-    console.log("Classroom Created:", { name, color, chosenBooks });
+      // Update local state
+      setClassrooms((prevClassrooms) => [...prevClassrooms, newClassroom]);
+
+      getAvailableBooks();
+    }
   };
 
   useEffect(() => {
@@ -77,12 +112,57 @@ function ClassroomsPage() {
     getData();
   }, []);
 
+  const handleQuitSelection = () => {
+    setSelectMode(false);
+    setCheckedCount(0);
+    setCheckedClassrooms({});
+  };
+
   return (
     <>
       <button className="AddButton" onClick={handleAddClassroomClick}>
         +
       </button>
-
+      {classrooms.length > 0 ? (
+        <>
+          {selectMode ? (
+            <button
+              className="SelectModeQuitButton"
+              onClick={handleQuitSelection}
+            >
+              x
+            </button>
+          ) : (
+            <></>
+          )}
+          {classrooms.map((classroom, index) => {
+            console.log(classroom.id);
+            return (
+              <div
+                key={classroom.id} // Ensure each classroom has a unique key
+                className="ClassroomContainer"
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
+              >
+                {selectMode ? (
+                  <input
+                    type="checkbox"
+                    checked={checkedClassrooms[classroom.id] || false} // Bind checkbox to individual classroom
+                    onChange={() => handleCheckboxChange(classroom)} // Handle the change for the specific classroom
+                  />
+                ) : null}
+                <div className="ClassroomContent">
+                  <p>{classroom.name}</p>
+                  <p>Students: {classroom.students.length}</p>
+                  <p>Books: {classroom.books.length}</p>
+                </div>
+              </div>
+            );
+          })}
+        </>
+      ) : (
+        <></>
+      )}
       {isAddClassroomModalOpen && (
         <AddClassroomModal onSave={createClassroom} books={availableBooks} />
       )}

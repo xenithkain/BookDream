@@ -203,10 +203,12 @@ export const checkForBook = async (isbn) => {
 export const createClassroomDB = async (classroom) => {
   try {
     // Create the classroom in the database
+    const uid = ID.unique(); // Generate a unique ID for the classroom
+    console.log(classroom.name, classroom.books);
     const response = await databases.createDocument(
       databaseKey,
       classroomsCollection,
-      ID.unique(),
+      uid,
       {
         name: classroom.name,
         books: classroom.books,
@@ -215,49 +217,33 @@ export const createClassroomDB = async (classroom) => {
 
     console.log("Classroom created in DB:", response);
 
-    // Update the classrooms attribute of each chosen book
+    // Update the classroom attribute of each chosen book
     await Promise.all(
       classroom.books.map(async (bookId) => {
         try {
-          // Fetch the existing book document
-          const bookDocument = await databases.getDocument(
-            databaseKey,
-            booksCollection,
-            bookId
+          // Update the book document with the new classroom ID (only one classroom per book)
+          await databases.updateDocument(databaseKey, booksCollection, bookId, {
+            classrooms: response.$id, // Assign the newly created classroom ID
+          });
+
+          console.log(
+            `Updated book with ID ${bookId} to include new classroom ID ${response.$id}.`
           );
-
-          // Initialize updatedClassrooms if it doesn't exist
-          const updatedClassrooms = Array.isArray(bookDocument.classrooms)
-            ? bookDocument.classrooms
-            : [];
-
-          // Avoid adding duplicates
-          if (!updatedClassrooms.includes(response.$id)) {
-            // Add the new classroom ID to the classrooms array
-            updatedClassrooms.push(response.$id);
-            // Update the book document with the new classrooms array
-            await databases.updateDocument(
-              databaseKey,
-              booksCollection,
-              bookId,
-              {
-                classrooms: updatedClassrooms,
-              }
-            );
-
-            console.log(
-              `Updated book with ID ${bookId} to include new classroom.`
-            );
-          } else {
-            console.log(`Book with ID ${bookId} already has this classroom.`);
-          }
         } catch (error) {
           console.error(`Error updating book ${bookId}:`, error);
         }
       })
     );
+
+    // Return the classroom object with the new ID
+    return {
+      id: response.$id, // Ensure to return the new classroom ID from the response
+      name: classroom.name,
+      books: classroom.books,
+    };
   } catch (error) {
     console.error("Error creating classroom in DB:", error);
+    throw error; // Optionally rethrow the error for further handling
   }
 };
 
