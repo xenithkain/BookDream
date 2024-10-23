@@ -6,6 +6,10 @@ import {
 } from "../appwrite/appwriteConfig";
 import BookAdditionsModal from "./BookAdditionsModal";
 import { useEffect, useState } from "react";
+import { FaHouse } from "react-icons/fa6";
+import { FaBook } from "react-icons/fa";
+import { IoMdSettings } from "react-icons/io";
+import { IoIosLogOut } from "react-icons/io";
 import { useNavigate, useLocation } from "react-router-dom";
 
 function NavBar() {
@@ -55,56 +59,44 @@ function NavBar() {
 
   return (
     <>
-      {userDetails ? (
-        <div className="NavBar">
-          <h5 className="BoldText">Welcome to Book Dream {userDetails.name}</h5>
-          <button className="Logout" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-      ) : (
-        <></>
-      )}
-      <div className="HorizontalBox">
-        <div className="NavBarPageButtonsContainer">
+      <div className="navbar_container">
           <button
-            className="NavBarPageButton"
+            className="navbar_button"
             style={getActiveStyle("/bookshelvespage")}
             onClick={() => {
               navigate("/bookshelvespage");
             }}
           >
-            Bookshelves
+            <FaHouse />
           </button>
           <button
-            className="NavBarPageButton"
+            className="navbar_button"
             style={getActiveStyle("/classroomspage")}
             onClick={() => {
               navigate("/classroomspage");
             }}
           >
-            Classrooms
+            <FaBook />
           </button>
           <button
-            className="NavBarPageButton"
+            className="navbar_button"
             style={getActiveStyle("/tagspage")}
             onClick={() => {
               navigate("/tagspage");
             }}
           >
-            Tags
+            <IoMdSettings />
+          </button>
+          <button
+            className="navbar_button"
+            style={getActiveStyle("/tagspage")}
+            onClick={() => {
+              navigate("/tagspage");
+            }}
+          >
+            <IoIosLogOut />
           </button>
         </div>
-        <button className="AddButton" onClick={handleClick}>
-          +
-        </button>
-        <BookAdditionsModal
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          position={modalPos}
-          onClose={onClose}
-        />
-      </div>
     </>
   );
 }

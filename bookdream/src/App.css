@@ -1,5 +1,43 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 
+:root {
+  --main-color:rgb(66, 66, 82);
+  --secondary-color:green;
+
+  --extra-small-spacing: .25rem;
+  --small-spacing: .5rem;
+  --medium-spacing: .75rem;
+  --large-spacing: 1rem;
+  --larger-spacing: 1.25rem;
+  --largest-spacing: 2rem;
+
+}
+
+.dashboard_page_container{
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--main-color);
+  display: flex;
+  flex-direction: row;
+}
+
+.navbar_container{
+  float: left;
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  align-items: center;
+  justify-content: flex-start;
+  padding: var(--extra-small-spacing);
+  gap: var(--small-spacing);
+
+  height: 70vh;
+  background-color: var(--secondary-color);
+}
+
+.navbar_button{
+}
+
 * {
   box-sizing: border-box;
 }
