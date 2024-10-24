@@ -1,4 +1,5 @@
 import { Client, Databases, Account, Query, ID } from "appwrite";
+import Classroom from "../components/Classroom";
 
 const client = new Client();
 client
@@ -204,7 +205,7 @@ export const createClassroomDB = async (classroom) => {
   try {
     // Create the classroom in the database
     const uid = ID.unique(); // Generate a unique ID for the classroom
-    console.log(classroom.name, classroom.books);
+
     const response = await databases.createDocument(
       databaseKey,
       classroomsCollection,
@@ -212,35 +213,47 @@ export const createClassroomDB = async (classroom) => {
       {
         name: classroom.name,
         books: classroom.books,
+        color: classroom.color,
       }
     );
 
     console.log("Classroom created in DB:", response);
 
     // Update the classroom attribute of each chosen book
-    await Promise.all(
-      classroom.books.map(async (bookId) => {
-        try {
-          // Update the book document with the new classroom ID (only one classroom per book)
-          await databases.updateDocument(databaseKey, booksCollection, bookId, {
-            classrooms: response.$id, // Assign the newly created classroom ID
-          });
+    if (classroom.books && classroom.books.length > 0) {
+      await Promise.all(
+        classroom.books.map(async (bookId) => {
+          try {
+            // Update the book document with the new classroom ID (only one classroom per book)
+            await databases.updateDocument(
+              databaseKey,
+              booksCollection,
+              bookId,
+              {
+                classrooms: response.$id, // Assign the newly created classroom ID
+              }
+            );
 
-          console.log(
-            `Updated book with ID ${bookId} to include new classroom ID ${response.$id}.`
-          );
-        } catch (error) {
-          console.error(`Error updating book ${bookId}:`, error);
-        }
-      })
-    );
+            console.log(
+              `Updated book with ID ${bookId} to include new classroom ID ${response.$id}.`
+            );
+          } catch (error) {
+            console.error(`Error updating book ${bookId}:`, error);
+          }
+        })
+      );
+    }
 
     // Return the classroom object with the new ID
-    return {
-      id: response.$id, // Ensure to return the new classroom ID from the response
-      name: classroom.name,
-      books: classroom.books,
-    };
+    return new Classroom(
+      response.$id,
+      classroom.name,
+      classroom.books,
+      classroom.available_books,
+      classroom.checked_out_books,
+      classroom.overdue_books,
+      classroom.color
+    );
   } catch (error) {
     console.error("Error creating classroom in DB:", error);
     throw error; // Optionally rethrow the error for further handling

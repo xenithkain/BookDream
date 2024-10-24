@@ -22,8 +22,13 @@ function DashboardPage({ setShowNav }) {
   const [classrooms, setClassrooms] = useState([]);
   useEffect(() => {
     setShowNav(true);
+    const intervalId = setInterval(() => {
+      updateClassrooms();
+      getAvailableBooks();
+    }, 5000);
     updateClassrooms();
-  });
+    getAvailableBooks();
+  }, []);
 
   const getAvailableBooks = async () => {
     const books = await fetchAvailableBooks();
@@ -39,9 +44,13 @@ function DashboardPage({ setShowNav }) {
       console.log("Classroom already exists:", name);
       return;
     }
-
-    let newClassroom = new Classroom("", name, [], chosenBooks);
-    console.log("New classroom:", newClassroom.name, newClassroom.books);
+    let newClassroom = new Classroom("", name, [], chosenBooks, [], [], color);
+    console.log(
+      "New classroom:",
+      newClassroom.name,
+      newClassroom.books,
+      newClassroom.color
+    );
     newClassroom = await createClassroomDB(newClassroom); // Update with returned classroom
 
     if (newClassroom) {

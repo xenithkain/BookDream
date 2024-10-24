@@ -8,7 +8,8 @@ class Classroom {
     students = [],
     available_books = [],
     checked_out_books = [],
-    overdue_books = []
+    overdue_books = [],
+    color = ""
   ) {
     this._name = name; // Internal variable to store name
     this._students = students; // Internal variable to store students
@@ -16,11 +17,16 @@ class Classroom {
     this._checked_out_books = checked_out_books;
     this._overdue_books = overdue_books;
     this._id = id;
+    this._color = color;
   }
 
   // Getter for name
   get name() {
     return this._name;
+  }
+
+  get color() {
+    return this._color;
   }
 
   get id() {
@@ -52,6 +58,10 @@ class Classroom {
 
   set id(newId) {
     this._id = newId;
+  }
+
+  set color(newColor) {
+    this._color = newColor;
   }
 
   // Setter for books
