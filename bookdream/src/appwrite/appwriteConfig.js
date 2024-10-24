@@ -264,6 +264,11 @@ export const fetchClassrooms = async () => {
   }
 };
 
+export const doesClassroomHaveOverdue = async (classroom) => {
+  classroom.available_books.array.forEach((book) => {});
+  return [];
+};
+
 export const fetchAvailableBooks = async () => {
   try {
     const response = await databases.listDocuments(

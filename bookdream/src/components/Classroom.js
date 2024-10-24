@@ -2,10 +2,19 @@ import Student from "./Student";
 import Book from "./Book";
 
 class Classroom {
-  constructor(id = "", name = "", students = [], books = []) {
+  constructor(
+    id = "",
+    name = "",
+    students = [],
+    available_books = [],
+    checked_out_books = [],
+    overdue_books = []
+  ) {
     this._name = name; // Internal variable to store name
     this._students = students; // Internal variable to store students
-    this._books = books; // Internal variable to store books
+    this._available_books = available_books; // Internal variable to store books
+    this._checked_out_books = checked_out_books;
+    this._overdue_books = overdue_books;
     this._id = id;
   }
 
@@ -24,8 +33,16 @@ class Classroom {
   }
 
   // Getter for books
-  get books() {
-    return this._books;
+  get available_books() {
+    return this._available_books;
+  }
+
+  get checked_out_books() {
+    return this._checked_out_books;
+  }
+
+  get overdue_books() {
+    return this._overdue_books;
   }
 
   // Setter for name
@@ -38,8 +55,16 @@ class Classroom {
   }
 
   // Setter for books
-  set books(newBooks) {
-    this._books = newBooks; // Set the internal variable
+  set available_books(newBooks) {
+    this._available_books = newBooks; // Set the internal variable
+  }
+
+  set checked_out_books(newBooks) {
+    this._checked_out_books = newBooks; // Set the internal variable
+  }
+
+  set overdue_books(newBooks) {
+    this._overdue_books = newBooks; // Set the internal variable
   }
 
   // Method to add a student
@@ -49,7 +74,7 @@ class Classroom {
 
   // Method to add a book
   addBook(newBook) {
-    this._books.push(newBook); // Fixed variable name to _books
+    this._available_books.push(newBook); // Fixed variable name to _books
   }
 }
 
