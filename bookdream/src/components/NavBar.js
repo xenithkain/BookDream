@@ -60,6 +60,7 @@ function NavBar() {
   return (
     <>
       <div className="navbar_container">
+        <div className="navbar_buttons">
           <button
             className="navbar_button"
             style={getActiveStyle("/bookshelvespage")}
@@ -97,6 +98,7 @@ function NavBar() {
             <IoIosLogOut />
           </button>
         </div>
+      </div>
     </>
   );
 }
