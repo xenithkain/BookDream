@@ -6,7 +6,6 @@ import { fetchAvailableBooks } from "../appwrite/appwriteConfig";
 import Book from "./Book";
 
 function AddClassroomModal({ onSave, books }) {
-  const shapeOptions = ["Flag", "Rect", "Oval"];
   const { closeModal, isAddClassroomModalOpen } = useAddClassroomModal(); // Updated hook
   const [modalFields, setModalFields] = useState({
     name: "",
@@ -14,6 +13,7 @@ function AddClassroomModal({ onSave, books }) {
     color: "",
     shape: "", // Initialize shape
   });
+  const [selectedBooks, setSelectedBooks] = useState([]);
   const [color, setColor] = useState("#aabbcc");
   const [availableBooks, setAvailableBooks] = useState([]);
 
@@ -91,7 +91,10 @@ function AddClassroomModal({ onSave, books }) {
               ></input>
             </div>
             <div className="add_classroom_modal_books_container">
-              <ClassroomBookList books={availableBooks} />
+              <ClassroomBookList
+                books={availableBooks}
+                setSelectedBooks={setSelectedBooks}
+              />
             </div>
           </div>
           <div className="add_classroom_modal_students_input add_classroom_modal_input">

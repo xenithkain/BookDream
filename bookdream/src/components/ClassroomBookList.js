@@ -1,96 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const ClassroomBookList = ({ books }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [startTime, setStartTime] = useState(null);
-  const [selectMode, setSelectMode] = useState(false);
-  const [checkedBooks, setCheckedBooks] = useState([]);
-  const [checkedCount, setCheckedCount] = useState(0);
+const ClassroomBookList = ({ books, setSelectedBooks }) => {
+  // Initialize the selection state to an array of false values
+  const [isSelectedList, setIsSelectedList] = useState(
+    Array(books.length).fill(false)
+  );
 
-  const handleQuitSelection = () => {
-    setSelectMode(false);
-    setCheckedCount(0);
-    setCheckedBooks({});
-  };
+  // Update selectedBooks based on isSelectedList whenever it changes
+  useEffect(() => {
+    const selectedBooks = books.filter((_, index) => isSelectedList[index]);
+    setSelectedBooks(selectedBooks);
+  }, [isSelectedList, books, setSelectedBooks]);
 
-  const handleMouseDown = (event) => {
-    event.stopPropagation();
-    const currentTime = new Date().getTime();
-    setStartTime(currentTime);
-  };
-
-  const handleMouseUp = (event) => {
-    event.stopPropagation();
-    if (startTime) {
-      const currentTime = new Date().getTime();
-      const duration = currentTime - startTime;
-      const durationSeconds = duration / 1000;
-      if (durationSeconds >= 0.5) {
-        setSelectMode(true);
-      } else if (durationSeconds < 0.5) {
-        if (!selectMode) {
-          if (!isOpen) {
-            setIsOpen(true);
-          } else {
-            setIsOpen(false);
-          }
-        }
-      }
-      setStartTime(null);
-    }
-  };
-
-  const handleCheckboxChange = (book) => {
-    let id = book.id;
-    setCheckedBooks((prevCheckedBooks) => {
-      const newCheckedValue = !prevCheckedBooks[id];
-      if (newCheckedValue !== prevCheckedBooks[id]) {
-        // Check for change
-        return {
-          ...prevCheckedBooks,
-          [id]: newCheckedValue,
-        };
-      }
-      return prevCheckedBooks; // No change, return previous state
+  const toggleBookSelection = (index) => {
+    setIsSelectedList((prevList) => {
+      const newList = [...prevList];
+      newList[index] = !newList[index]; // Toggle the selected status
+      return newList;
     });
   };
 
   return (
     <>
-      {selectMode ? (
-        <button className="SelectModeQuitButton" onClick={handleQuitSelection}>
-          x
-        </button>
-      ) : (
-        <></>
-      )}
       {books.map((book, index) => {
-        let id = book.id;
+        const isSelected = isSelectedList[index];
         return (
           <div
             className="classroom_book_container"
             key={index}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
+            onClick={() => toggleBookSelection(index)} // Use an arrow function here
           >
-            {selectMode ? (
-              <input
-                type="checkbox"
-                checked={checkedBooks[id] || false}
-                onChange={() => handleCheckboxChange(book)}
-              />
-            ) : (
-              <></>
-            )}
+            <div
+              className={`classroom_book_selected_tag ${
+                isSelected ? "selected" : ""
+              }`}
+            ></div>
             <img
               className="classroom_book_cover"
-              src={book.getCover("medium")}
-            ></img>
+              src={book.getCover("Medium")}
+              alt={book.title}
+              style={{ height: "50%", width: "50%" }}
+            />
             <div className="classroom_book_details_container">
-              <p style={{ fontSize: "var(--medium-font)" }}>{book.title}</p>
-              <p style={{ fontSize: "var(--small2-font)", fontWeight: "bold" }}>
-                {book.authors}
-              </p>
+              <p>{book.title}</p>
+              <p>{book.authors}</p>
             </div>
           </div>
         );

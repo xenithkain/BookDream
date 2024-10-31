@@ -31,11 +31,11 @@
   --main-font-family: Nunito;
 }
 
-*{
+* {
   font-family: var(--main-font-family);
 }
 
-.horizontal-alligner{
+.horizontal-alligner {
   display: flex;
   flex-direction: row;
 }
@@ -129,7 +129,7 @@
   border-radius: var(--round);
 }
 
-.add_classroom_modal_screen_overlay{
+.add_classroom_modal_screen_overlay {
   width: 100vw;
   height: 100vh;
   background-color: var(--modal-screen-overlay-color);
@@ -139,7 +139,7 @@
   align-items: center;
 }
 
-.add_classroom_modal_container{
+.add_classroom_modal_container {
   width: 70vw;
   height: 90vh;
   background-color: var(--main-color);
@@ -152,88 +152,103 @@
   gap: var(--largest-spacing);
 }
 
-.add_classroom_modal_label{
+.add_classroom_modal_label {
   color: white;
   font-size: var(--medium-font);
   margin-right: var(--large-spacing);
 }
 
-.add_classroom_modal_text_input{
+.add_classroom_modal_text_input {
   width: 30%;
   height: 100%;
   border-radius: var(--round);
-  border:none;
+  border: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   padding-left: var(--large-spacing);
   background-color: var(--main-color-lighter);
-  color:white;
+  color: white;
 }
 
-
-.add_classroom_modal_input{
+.add_classroom_modal_input {
   background-color: var(--main-color-darker);
   border-radius: var(--round);
   padding: var(--large-spacing);
 }
 
-.add_classroom_modal_name_input{
-  flex-grow: .1;
+.add_classroom_modal_name_input {
+  flex-grow: 0.1;
   display: flex;
   flex-direction: row;
 }
 
-.add_classroom_modal_color_input{
-  flex-grow:1;
+.add_classroom_modal_color_input {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
 }
 
-.add_classroom_modal_books_input{
+.add_classroom_modal_books_input {
   flex-grow: 1;
-  display:flex;
+  display: flex;
   flex-direction: column;
   gap: var(--large-spacing);
 }
 
-.add_classroom_modal_books_container{
+.add_classroom_modal_books_container {
   width: 100%;
   height: 100%;
-  display:flex;
+  max-height: 200px;
+  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   background-color: var(--main-color-lighter);
+  border-radius: var(--round);
+  padding: var(--small-spacing);
+  overflow-y: scroll;
 }
 
-.classroom_book_container{
-  border-radius: var(--round);
-  border: var(--thin-border) solid black;
+.classroom_book_container {
+  border-radius: var(--slightly-round);
   display: flex;
   flex-direction: column;
-  margin:auto;
-  height:100%;
+  align-items: center;
+  margin: auto;
+  height: fit-content;
   width: 50%;
   max-width: 200px;
+  max-height: 200px;
   text-align: center;
-  text-shadow: 
-    -2px -2px 0 black,  
-     2px -2px 0 black,
-    -2px  2px 0 black,
-     2px  2px 0 black;
+  text-shadow: -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black,
+    2px 2px 0 black;
   color: white;
+  background-color: var(--main-color-darker);
 }
 
-.add_classroom_modal_students_input{
+.classroom_book_selected_tag {
+  border-radius: var(--very-round);
+  align-self: flex-start;
+  margin: var(--small-spacing);
+  width: var(--medium-spacing);
+  height: var(--medium-spacing);
+  background-color: red;
+}
+
+.selected {
+  background-color: var(--secondary-color-lighter);
+}
+
+.add_classroom_modal_students_input {
   display: flex;
   flex-direction: column;
-  flex-grow:1;
+  flex-grow: 1;
   gap: var(--large-spacing);
 }
 
-.add_classroom_modal_students_name_container{
+.add_classroom_modal_students_name_container {
   border-radius: var(--round);
-  width:100%;
+  width: 100%;
   height: 100%;
   background-color: var(--main-color-lighter);
 }
@@ -297,7 +312,7 @@
   margin-left: var(--small-spacing);
 }
 
-.classroom_list_overdue_indicator_container{
+.classroom_list_overdue_indicator_container {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -305,7 +320,7 @@
   margin-right: var(--small-spacing);
 }
 
-.classroom_list_overdue_dropdown{
+.classroom_list_overdue_dropdown {
   height: var(--large-spacing);
   width: var(--large-spacing);
 
@@ -314,11 +329,11 @@
   margin-right: var(--extra-small-spacing);
 }
 
-.classroom_list_overdue_dropdown:hover{
+.classroom_list_overdue_dropdown:hover {
   background-color: var(--secondary-color-lighter);
 }
 
-.classroom_list_overdue_indicator_light{
+.classroom_list_overdue_indicator_light {
   height: var(--large-spacing);
   width: var(--large-spacing);
   border-radius: var(--very-round);
