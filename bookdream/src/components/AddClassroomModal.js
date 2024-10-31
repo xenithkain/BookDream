@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAddClassroomModal } from "./AddClassroomModalContext"; // Updated context import
 import { HexColorPicker } from "react-colorful";
+import ClassroomBookList from "./ClassroomBookList";
+import { fetchAvailableBooks } from "../appwrite/appwriteConfig";
+import Book from "./Book";
 
 function AddClassroomModal({ onSave, books }) {
   const shapeOptions = ["Flag", "Rect", "Oval"];
@@ -12,6 +15,30 @@ function AddClassroomModal({ onSave, books }) {
     shape: "", // Initialize shape
   });
   const [color, setColor] = useState("#aabbcc");
+  const [availableBooks, setAvailableBooks] = useState([]);
+
+  useEffect(() => {
+    const getAvaialbleBooks = async () => {
+      let b = await fetchAvailableBooks();
+      let newBooks = [];
+      b.forEach((book) => {
+        newBooks.push(
+          new Book(
+            book.title,
+            book.authors,
+            book.genres,
+            book.covers,
+            book.tags,
+            book.isbn,
+            book.$id
+          )
+        );
+      });
+      console.log(newBooks);
+      setAvailableBooks(newBooks);
+    };
+    getAvaialbleBooks();
+  }, []);
 
   const toggleBookSelection = (bookId) => {
     setModalFields((prev) => ({
@@ -63,7 +90,9 @@ function AddClassroomModal({ onSave, books }) {
                 placeholder="Search for Book {Tag, Name, Author}"
               ></input>
             </div>
-            <div className="add_classroom_modal_books_container"></div>
+            <div className="add_classroom_modal_books_container">
+              <ClassroomBookList books={availableBooks} />
+            </div>
           </div>
           <div className="add_classroom_modal_students_input add_classroom_modal_input">
             <div className="horizontal_alligner">

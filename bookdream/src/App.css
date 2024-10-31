@@ -206,6 +206,24 @@
   background-color: var(--main-color-lighter);
 }
 
+.classroom_book_container{
+  border-radius: var(--round);
+  border: var(--thin-border) solid black;
+  display: flex;
+  flex-direction: column;
+  margin:auto;
+  height:100%;
+  width: 50%;
+  max-width: 200px;
+  text-align: center;
+  text-shadow: 
+    -2px -2px 0 black,  
+     2px -2px 0 black,
+    -2px  2px 0 black,
+     2px  2px 0 black;
+  color: white;
+}
+
 .add_classroom_modal_students_input{
   display: flex;
   flex-direction: column;

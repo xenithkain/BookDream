@@ -292,7 +292,7 @@ export const fetchAvailableBooks = async () => {
       (book) => !book.classrooms || book.classrooms.length === 0
     );
 
-    console.log("Fetched books:", availableBooks); // Log filtered available books
+    //console.log("Fetched books:", availableBooks); // Log filtered available books
 
     return availableBooks; // Return the filtered array of books
   } catch (error) {

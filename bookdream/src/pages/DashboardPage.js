@@ -41,17 +41,10 @@ function DashboardPage({ setShowNav }) {
       return;
     }
     let newClassroom = new Classroom("", name, [], chosenBooks, [], [], color);
-    console.log(
-      "New classroom:",
-      newClassroom.name,
-      newClassroom.books,
-      newClassroom.color
-    );
+
     newClassroom = await createClassroomDB(newClassroom); // Update with returned classroom
 
     if (newClassroom) {
-      console.log("Updated Classroom:", newClassroom);
-
       // Update local state
       setClassrooms((prevClassrooms) => [...prevClassrooms, newClassroom]);
 

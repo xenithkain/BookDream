@@ -6,7 +6,6 @@ const ClassroomList = ({ classrooms }) => {
       {classrooms.length > 0 ? (
         <div className="classroom_list_container">
           {classrooms.map((classroom, index) => {
-            console.log(classroom.name + ", " + index + ": " + classroom.color);
             return (
               <div className="classroom_list_item" key={classroom.id}>
                 <div
