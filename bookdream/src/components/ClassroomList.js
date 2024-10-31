@@ -1,10 +1,12 @@
+import { MdKeyboardArrowDown } from "react-icons/md";
+
 const ClassroomList = ({ classrooms }) => {
   return (
     <>
       {classrooms.length > 0 ? (
         <div className="classroom_list_container">
           {classrooms.map((classroom, index) => {
-            console.log(classroom.color);
+            console.log(classroom.name + ", " + index + ": " + classroom.color);
             return (
               <div className="classroom_list_item" key={classroom.id}>
                 <div
@@ -29,7 +31,29 @@ const ClassroomList = ({ classrooms }) => {
                     <p>Books: 0</p>
                   )}
                 </div>
-                {}
+                <div className="classroom_list_overdue_indicator_container">
+                  {classroom.overdue_books &&
+                  classroom.overdue_books.length > 0 ? (
+                    <>
+                      <button className="classroom_list_overdue_dropdown">
+                        <MdKeyboardArrowDown />
+                      </button>
+                      <p>{classroom.overdue_books.length} books overdue</p>
+                      <div
+                        className="classroom_list_overdue_indicator_light"
+                        style={{ backgroundColor: "red" }}
+                      ></div>
+                    </>
+                  ) : (
+                    <>
+                      <p>No books overdue</p>
+                      <div
+                        className="classroom_list_overdue_indicator_light"
+                        style={{ backgroundColor: "rgb(2, 178, 2)" }}
+                      ></div>
+                    </>
+                  )}
+                </div>
               </div>
             );
           })}

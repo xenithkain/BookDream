@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useAddClassroomModal } from "./AddClassroomModalContext"; // Updated context import
+import { HexColorPicker } from "react-colorful";
 
 function AddClassroomModal({ onSave, books }) {
   const shapeOptions = ["Flag", "Rect", "Oval"];
@@ -10,6 +11,7 @@ function AddClassroomModal({ onSave, books }) {
     color: "",
     shape: "", // Initialize shape
   });
+  const [color, setColor] = useState("#aabbcc");
 
   const toggleBookSelection = (bookId) => {
     setModalFields((prev) => ({
@@ -32,69 +34,52 @@ function AddClassroomModal({ onSave, books }) {
   if (!isAddClassroomModalOpen) return null; // Updated condition
 
   return (
-    <div className="AddClassroomModal">
-      <div className="AddClassroomModalContent">
-        <h2>Create a New Classroom</h2> {/* Updated heading */}
-        {/* Input for Name */}
-        <div className="FormGroup">
-          <label htmlFor="ClassroomName">Name</label>
-          <input
-            type="text"
-            id="classroom-name" // Updated ID
-            value={modalFields.name}
-            onChange={(e) => updateField("name", e.target.value)}
-          />
-        </div>
-        {/* Dropdown for Shape */}
-        <div className="FormGroup">
-          <label htmlFor="ClassroomShape">Shape</label>
-          <select
-            id="classroom-shape" // Updated ID
-            value={modalFields.shape}
-            onChange={(e) => updateField("shape", e.target.value)}
-          >
-            {shapeOptions.map((option, index) => (
-              <option key={index} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
-        {/* Color Picker */}
-        <div className="FormGroup">
-          <label htmlFor="ClassroomColor">Color</label>
-          <input
-            type="color"
-            id="classroom-color" // Updated ID
-            value={modalFields.color}
-            onChange={(e) => updateField("color", e.target.value)}
-          />
-        </div>
-        {/* Book Selection Section */}
-        <div className="BooksSelection">
-          <h3>Select Books</h3>
-          <div className="BookTiles">
-            {books.map((book) => (
-              <div
-                key={book.$id}
-                className={`BookTile ${
-                  modalFields.chosenBooks.includes(book.$id) ? "selected" : ""
-                }`}
-                onClick={() => toggleBookSelection(book.$id)}
-              >
-                {book.title}
-                {}
-              </div>
-            ))}
+    <>
+      <div className="add_classroom_modal_screen_overlay">
+        <div className="add_classroom_modal_container">
+          <div className="add_classroom_modal_name_input add_classroom_modal_input">
+            <label className="add_classroom_modal_label">Name</label>
+            <input
+              className="add_classroom_modal_text_input"
+              type="text"
+              placeholder="Enter Classroom Name"
+            ></input>
+          </div>
+          <div className="add_classroom_modal_color_input add_classroom_modal_input">
+            <label className="add_classroom_modal_label">Color</label>
+            <HexColorPicker
+              style={{ width: "100%" }}
+              color={color}
+              onChange={setColor}
+            />
+          </div>
+          <div className="add_classroom_modal_books_input add_classroom_modal_input">
+            <div className="horizontal_alligner">
+              <label className="add_classroom_modal_label">Books</label>
+              <input
+                style={{ width: "50%" }}
+                className="add_classroom_modal_text_input"
+                type="text"
+                placeholder="Search for Book {Tag, Name, Author}"
+              ></input>
+            </div>
+            <div className="add_classroom_modal_books_container"></div>
+          </div>
+          <div className="add_classroom_modal_students_input add_classroom_modal_input">
+            <div className="horizontal_alligner">
+              <label className="add_classroom_modal_label">Students</label>
+              <input
+                className="add_classroom_modal_text_input"
+                type="text"
+                placeholder="Enter Student Name"
+              ></input>
+            </div>
+
+            <div className="add_classroom_modal_students_name_container"></div>
           </div>
         </div>
-        {/* Save and Close Buttons */}
-        <div className="FormButtons">
-          <button onClick={handleSave}>Save</button>
-          <button onClick={closeModal}>Close</button>
-        </div>
       </div>
-    </div>
+    </>
   );
 }
 

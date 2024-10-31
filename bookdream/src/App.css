@@ -6,6 +6,7 @@
   --main-color-lighter: rgb(87, 87, 93);
   --secondary-color: green;
   --secondary-color-lighter: rgb(2, 178, 2);
+  --modal-screen-overlay-color: rgb(73, 73, 73, 0.8);
 
   --extra-small-spacing: 0.25rem;
   --small-spacing: 0.5rem;
@@ -26,6 +27,17 @@
   --medium-font: 1.5rem;
   --big-font: 2rem;
   --bigger-font: 3.5rem;
+
+  --main-font-family: Nunito;
+}
+
+*{
+  font-family: var(--main-font-family);
+}
+
+.horizontal-alligner{
+  display: flex;
+  flex-direction: row;
 }
 
 .dashboard_title {
@@ -37,14 +49,12 @@
 .large_title {
   font-size: var(--big-font);
   font-weight: bold;
-  font-family: Nunito;
   text-align: center;
 }
 
 .medium_title {
   font-size: var(--medium-font);
   font-weight: bold;
-  font-family: Nunito;
   text-align: center;
 }
 
@@ -107,7 +117,6 @@
   height: fit-content;
   margin-bottom: 1rem; /* Space between title and buttons */
   margin-left: 1rem;
-  font-family: Nunito;
   font-weight: bold;
   font-size: var(--big-font);
 }
@@ -118,6 +127,97 @@
   grid-column: 3 / 11;
   grid-row: 3 / 19;
   border-radius: var(--round);
+}
+
+.add_classroom_modal_screen_overlay{
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--modal-screen-overlay-color);
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add_classroom_modal_container{
+  width: 70vw;
+  height: 90vh;
+  background-color: var(--main-color);
+  box-shadow: 0rem -0.25rem 0 0.3rem var(--secondary-color);
+  border-radius: var(--round);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--largest-spacing);
+  gap: var(--largest-spacing);
+}
+
+.add_classroom_modal_label{
+  color: white;
+  font-size: var(--medium-font);
+  margin-right: var(--large-spacing);
+}
+
+.add_classroom_modal_text_input{
+  width: 30%;
+  height: 100%;
+  border-radius: var(--round);
+  border:none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-left: var(--large-spacing);
+  background-color: var(--main-color-lighter);
+  color:white;
+}
+
+
+.add_classroom_modal_input{
+  background-color: var(--main-color-darker);
+  border-radius: var(--round);
+  padding: var(--large-spacing);
+}
+
+.add_classroom_modal_name_input{
+  flex-grow: .1;
+  display: flex;
+  flex-direction: row;
+}
+
+.add_classroom_modal_color_input{
+  flex-grow:1;
+  display: flex;
+  flex-direction: column;
+}
+
+.add_classroom_modal_books_input{
+  flex-grow: 1;
+  display:flex;
+  flex-direction: column;
+  gap: var(--large-spacing);
+}
+
+.add_classroom_modal_books_container{
+  width: 100%;
+  height: 100%;
+  display:flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  background-color: var(--main-color-lighter);
+}
+
+.add_classroom_modal_students_input{
+  display: flex;
+  flex-direction: column;
+  flex-grow:1;
+  gap: var(--large-spacing);
+}
+
+.add_classroom_modal_students_name_container{
+  border-radius: var(--round);
+  width:100%;
+  height: 100%;
+  background-color: var(--main-color-lighter);
 }
 
 .classrooms_stats_container {
@@ -171,13 +271,40 @@
 .classroom_list_item_divider {
   border-radius: var(--very-round);
   height: 80%;
-  width: 1rem;
+  width: var(--large-spacing);
   margin-left: var(--medium-spacing);
 }
 
 .classroom_list_item_content {
-  font-family: Nunito;
   margin-left: var(--small-spacing);
+}
+
+.classroom_list_overdue_indicator_container{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: auto;
+  margin-right: var(--small-spacing);
+}
+
+.classroom_list_overdue_dropdown{
+  height: var(--large-spacing);
+  width: var(--large-spacing);
+
+  border-radius: var(--very-round);
+
+  margin-right: var(--extra-small-spacing);
+}
+
+.classroom_list_overdue_dropdown:hover{
+  background-color: var(--secondary-color-lighter);
+}
+
+.classroom_list_overdue_indicator_light{
+  height: var(--large-spacing);
+  width: var(--large-spacing);
+  border-radius: var(--very-round);
+  margin-left: var(--large-spacing);
 }
 
 .actions_container {

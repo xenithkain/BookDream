@@ -22,10 +22,6 @@ function DashboardPage({ setShowNav }) {
   const [classrooms, setClassrooms] = useState([]);
   useEffect(() => {
     setShowNav(true);
-    const intervalId = setInterval(() => {
-      updateClassrooms();
-      getAvailableBooks();
-    }, 5000);
     updateClassrooms();
     getAvailableBooks();
   }, []);
@@ -60,6 +56,7 @@ function DashboardPage({ setShowNav }) {
       setClassrooms((prevClassrooms) => [...prevClassrooms, newClassroom]);
 
       getAvailableBooks();
+      updateClassrooms();
     }
   };
 
@@ -73,11 +70,12 @@ function DashboardPage({ setShowNav }) {
         classroom.students,
         classroom.books,
         classroom.checked_out_books,
-        classroom.overdue_books
+        classroom.overdue_books,
+        classroom.color
       );
       createdClassrooms.push(newClassroom);
     });
-    setClassrooms(createdClassrooms);
+    if (createdClassrooms != classrooms) setClassrooms(createdClassrooms);
   };
   return (
     <div className="dashboard_page_container">
