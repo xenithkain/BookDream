@@ -1,4 +1,4 @@
-import { useModal } from "../components/ScanModalContext";
+import { useModal } from "../../contexts/ScanModalContext";
 
 function BookAdditionsModal({ isOpen, setIsOpen, position, onClose }) {
   const { openModal, setIsBulk } = useModal();

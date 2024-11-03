@@ -1,16 +1,43 @@
 import { useState, useEffect } from "react";
+import BookOptionsModal from "./modals/BookOptionsModal";
 
-const ClassroomBookList = ({ books, setSelectedBooks }) => {
+const ClassroomBookList = ({ books, setModalFields, bookSearch }) => {
   // Initialize the selection state to an array of false values
   const [isSelectedList, setIsSelectedList] = useState(
     Array(books.length).fill(false)
   );
+  const [sortedBooks, setSortedBooks] = useState(books);
+
+  useEffect(() => {
+    setSortedBooks(books);
+  }, [books]);
 
   // Update selectedBooks based on isSelectedList whenever it changes
   useEffect(() => {
     const selectedBooks = books.filter((_, index) => isSelectedList[index]);
-    setSelectedBooks(selectedBooks);
-  }, [isSelectedList, books, setSelectedBooks]);
+    setModalFields((prev) => ({ ...prev, chosenBooks: selectedBooks }));
+  }, [isSelectedList, books, setModalFields]);
+
+  useEffect(() => {
+    setSortedBooks((oldbooks) => {
+      let newBooks = [];
+      newBooks = books.filter((item) => {
+        if (!newBooks.includes(item)) {
+          return item.title.includes(bookSearch);
+        } else {
+          return;
+        }
+      });
+      oldbooks.forEach((book) => {
+        if (!newBooks.includes(book)) {
+          if (book.title.includes(bookSearch)) {
+            newBooks.push(book);
+          }
+        }
+      });
+      return newBooks;
+    });
+  }, [bookSearch]);
 
   const toggleBookSelection = (index) => {
     setIsSelectedList((prevList) => {
@@ -22,7 +49,7 @@ const ClassroomBookList = ({ books, setSelectedBooks }) => {
 
   return (
     <>
-      {books.map((book, index) => {
+      {sortedBooks.map((book, index) => {
         const isSelected = isSelectedList[index];
         return (
           <div

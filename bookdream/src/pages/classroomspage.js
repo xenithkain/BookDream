@@ -1,5 +1,5 @@
-import { useAddClassroomModal } from "../components/AddClassroomModalContext"; // Adjust the path if necessary
-import AddClassroomModal from "../components/AddClassroomModal";
+import { useAddClassroomModal } from "../contexts/AddClassroomModalContext"; // Adjust the path if necessary
+import AddClassroomModal from "../components/modals/AddClassroomModal";
 import {
   getBooks,
   getTags,

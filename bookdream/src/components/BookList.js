@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import BookOptionsModal from "./BookOptionsModal";
+import BookOptionsModal from "./modals/BookOptionsModal";
 import { removeBooks } from "../appwrite/appwriteConfig";
 
 const BookList = ({

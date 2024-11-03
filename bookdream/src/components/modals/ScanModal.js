@@ -1,4 +1,4 @@
-import { useModal } from "../components/ScanModalContext";
+import { useModal } from "../../contexts/ScanModalContext";
 import {
   getBooks,
   checkForBook,
@@ -7,24 +7,24 @@ import {
   checkIfUserHasBook,
   addBookToUser,
   addBookToDatabase,
-} from "../appwrite/appwriteConfig";
+} from "../../appwrite/appwriteConfig";
 import { ID } from "appwrite";
 import {
   httpGetAsync,
   checkImageExists,
   fetchAuthorNames,
-} from "../openlibrary/openlibrary";
+} from "../../openlibrary/openlibrary";
 import { useState, useEffect } from "react";
-import Book from "../components/Book";
-import BookTile from "./BookTile";
+import Book from "../Book";
+import BookTile from "../BookTile";
 import {
   account,
   databases,
   usersCollection,
   databaseKey,
-} from "../appwrite/appwriteConfig";
-import Tag from "./Tag";
-import { sortList, api_key } from "./utility";
+} from "../../appwrite/appwriteConfig";
+import Tag from "../Tag";
+import { sortList, api_key } from "../utility";
 
 function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
   const { isScanModalOpen, closeModal, isBulk } = useModal();

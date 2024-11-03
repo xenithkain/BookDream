@@ -4,7 +4,7 @@ import {
   usersCollection,
   databaseKey,
 } from "../appwrite/appwriteConfig";
-import BookAdditionsModal from "./BookAdditionsModal";
+import BookAdditionsModal from "./modals/BookAdditionsModal";
 import { useEffect, useState } from "react";
 import { FaHouse } from "react-icons/fa6";
 import { FaBook } from "react-icons/fa";

@@ -8,10 +8,10 @@ import ClassroomsPage from "./pages/classroomspage.js";
 import NavBar from "./components/NavBar";
 import DashboardPage from "./pages/DashboardPage";
 import { useState } from "react";
-import { ScanModalProvider } from "./components/ScanModalContext";
-import { TagModalProvider } from "./components/TagModalContext";
-import { AddClassroomModalProvider } from "./components/AddClassroomModalContext";
-import { UserSettingsProvider } from "./components/UserSettingsContext.js";
+import { ScanModalProvider } from "./contexts/ScanModalContext";
+import { TagModalProvider } from "./contexts/TagModalContext";
+import { AddClassroomModalProvider } from "./contexts/AddClassroomModalContext";
+import { UserSettingsProvider } from "./contexts/UserSettingsContext.js";
 
 function App() {
   const [showNav, setShowNav] = useState(true);

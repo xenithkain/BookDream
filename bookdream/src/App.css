@@ -215,23 +215,30 @@
   flex-direction: column;
   align-items: center;
   margin: auto;
-  height: fit-content;
-  width: 50%;
-  max-width: 200px;
-  max-height: 200px;
+  flex: 1 1 20%;
+  min-width: 150px;
+  max-width: 150px;
+  height: 200px;
   text-align: center;
   text-shadow: -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black,
     2px 2px 0 black;
   color: white;
   background-color: var(--main-color-darker);
+  cursor: pointer;
+}
+
+.classroom_book_container:hover{
+  background-color: var(--main-color);
 }
 
 .classroom_book_selected_tag {
   border-radius: var(--very-round);
   align-self: flex-start;
   margin: var(--small-spacing);
-  width: var(--medium-spacing);
-  height: var(--medium-spacing);
+  width: var(--small-spacing);
+  height: var(--small-spacing);
+  min-width: var(--small-spacing);
+  min-height: var(--small-spacing);
   background-color: red;
 }
 

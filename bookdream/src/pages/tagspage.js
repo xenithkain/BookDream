@@ -1,8 +1,8 @@
 import { useEffect, useReducer, useState } from "react";
 import Tag from "../components/Tag";
 import { getTags, addTag, removeTags } from "../appwrite/appwriteConfig";
-import { useTagModal } from "../components/TagModalContext";
-import TagModal from "../components/TagModal";
+import { useTagModal } from "../contexts/TagModalContext";
+import TagModal from "../components/modals/TagModal";
 
 const initialState = {
   tags: [],

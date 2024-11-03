@@ -1,5 +1,5 @@
-import Tag from "./Tag";
-import { useTagModal } from "./TagModalContext";
+import Tag from "../Tag";
+import { useTagModal } from "../../contexts/TagModalContext";
 import { useState } from "react";
 
 function TagModal({ onSave }) {

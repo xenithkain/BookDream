@@ -1,4 +1,4 @@
-import { UseUserSettings } from "../components/UserSettingsContext";
+import { UseUserSettings } from "../contexts/UserSettingsContext";
 import { useEffect, useState } from "react";
 import { LuBookPlus } from "react-icons/lu";
 import { MdOutlineDoorFront } from "react-icons/md";
@@ -11,8 +11,8 @@ import {
   fetchAvailableBooks,
 } from "../appwrite/appwriteConfig";
 import Classroom from "../components/Classroom";
-import { useAddClassroomModal } from "../components/AddClassroomModalContext";
-import AddClassroomModal from "../components/AddClassroomModal";
+import { useAddClassroomModal } from "../contexts/AddClassroomModalContext";
+import AddClassroomModal from "../components/modals/AddClassroomModal";
 
 function DashboardPage({ setShowNav }) {
   const { userColors, changeColors } = UseUserSettings();
