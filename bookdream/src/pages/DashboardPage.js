@@ -2,7 +2,6 @@ import { UseUserSettings } from "../contexts/UserSettingsContext";
 import { useEffect, useState } from "react";
 import { LuBookPlus } from "react-icons/lu";
 import { MdOutlineDoorFront } from "react-icons/md";
-import { FaPlusCircle } from "react-icons/fa";
 import ClassroomList from "../components/ClassroomList";
 import {
   doesClassroomHaveOverdue,
@@ -31,7 +30,7 @@ function DashboardPage({ setShowNav }) {
     setAvailableBooks(books);
   };
 
-  const createClassroom = async (name, color, chosenBooks) => {
+  const createClassroom = async (name, color, chosenBooks, students) => {
     const classroomExists = classrooms.some(
       (classroom) => classroom.name === name
     );
@@ -40,8 +39,15 @@ function DashboardPage({ setShowNav }) {
       console.log("Classroom already exists:", name);
       return;
     }
-    let newClassroom = new Classroom("", name, [], chosenBooks, [], [], color);
-
+    let newClassroom = new Classroom(
+      "",
+      name,
+      students,
+      chosenBooks,
+      [],
+      [],
+      color
+    );
     newClassroom = await createClassroomDB(newClassroom); // Update with returned classroom
 
     if (newClassroom) {
@@ -72,31 +78,33 @@ function DashboardPage({ setShowNav }) {
   };
   return (
     <div className="dashboard_page_container">
-      <div className="large_title dashboard_title">Book Dream</div>
-      <div className="recent_books_container">
-        <div className="medium_title">Recent Books</div>
-      </div>
-      <div className="classrooms_stats_container">
-        <div
-          className="classrooms_stats_refresh_button"
-          onClick={updateClassrooms}
-        >
-          X
+      <div className="dashboard_title">Book Dream</div>
+      <div className="dashboard_page_contents">
+        <div className="recent_books_container">
+          <div className="medium_title">Recent Books</div>
         </div>
-        <div className="medium_title classroom_stats_title">Classrooms</div>
-        <ClassroomList classrooms={classrooms} />
-      </div>
-      <div className="actions_container">
-        <div className="action_scan_book action">
-          <LuBookPlus className="center_icon" />
+        <div className="classrooms_stats_container">
+          <div
+            className="classrooms_stats_refresh_button"
+            onClick={updateClassrooms}
+          >
+            X
+          </div>
+          <div className="medium_title classroom_stats_title">Classrooms</div>
+          <ClassroomList classrooms={classrooms} />
         </div>
-        <div className="action_add_classroom action" onClick={openModal}>
-          <MdOutlineDoorFront className="center_icon" />
+        <div className="actions_container">
+          <div className="action_scan_book action">
+            <LuBookPlus className="center_icon" />
+          </div>
+          <div className="action_add_classroom action" onClick={openModal}>
+            <MdOutlineDoorFront className="center_icon" />
+          </div>
         </div>
+        {isAddClassroomModalOpen && (
+          <AddClassroomModal onSave={createClassroom} books={availableBooks} />
+        )}
       </div>
-      {isAddClassroomModalOpen && (
-        <AddClassroomModal onSave={createClassroom} books={availableBooks} />
-      )}
     </div>
   );
 }

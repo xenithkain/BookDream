@@ -28,7 +28,14 @@
   --big-font: 2rem;
   --bigger-font: 3.5rem;
 
+  --white-text-shadow: -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black,
+  2px 2px 0 black;
+
   --main-font-family: Nunito;
+
+  --short-transition: .1s;
+  --medium-transition: .5s;
+  --long-transition: 1s;
 }
 
 * {
@@ -41,15 +48,14 @@
 }
 
 .dashboard_title {
-  grid-row: 1 / 2;
-  grid-column: 11 / 15;
+  width:100%;
   text-wrap: nowrap;
-}
-
-.large_title {
+  background-color: var(--main-color-darker);
+  color:white;
   font-size: var(--big-font);
   font-weight: bold;
-  text-align: center;
+  text-align: start;
+  padding: var(--small-spacing);
 }
 
 .medium_title {
@@ -70,9 +76,17 @@
   width: 100vw;
   height: 100vh;
   background-color: var(--main-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.dashboard_page_contents{
   display: grid;
   grid-template-rows: repeat(20, 1fr);
   grid-template-columns: repeat(25, 1fr);
+  background-color: var(--main-color-darker);
 }
 
 .navbar_container {
@@ -137,6 +151,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
 }
 
 .add_classroom_modal_container {
@@ -178,19 +193,19 @@
 }
 
 .add_classroom_modal_name_input {
-  flex-grow: 0.1;
+  flex:0.1 1 auto;
   display: flex;
   flex-direction: row;
 }
 
 .add_classroom_modal_color_input {
-  flex-grow: 1;
+  flex: 1 1 20%;
   display: flex;
   flex-direction: column;
 }
 
 .add_classroom_modal_books_input {
-  flex-grow: 1;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   gap: var(--large-spacing);
@@ -220,11 +235,11 @@
   max-width: 150px;
   height: 200px;
   text-align: center;
-  text-shadow: -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black,
-    2px 2px 0 black;
+  text-shadow: var(--white-text-shadow);
   color: white;
   background-color: var(--main-color-darker);
   cursor: pointer;
+  transition: background-color var(--short-transition) ease-in-out;
 }
 
 .classroom_book_container:hover{
@@ -249,16 +264,72 @@
 .add_classroom_modal_students_input {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
+  flex: 1 1 auto;
   gap: var(--large-spacing);
 }
 
 .add_classroom_modal_students_name_container {
   border-radius: var(--round);
+  flex: 1 1 auto;
   width: 100%;
   height: 100%;
   background-color: var(--main-color-lighter);
+  padding:var(--small-spacing);
+  gap: var(--small-spacing);
+  display:flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow-y: auto;
 }
+
+.student_name_tag_container{
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: var(--small-spacing);
+  border-radius: var(--round);
+  background-color: var(--main-color-darker);
+  width:fit-content;
+  min-width: 100px;
+  height:fit-content;
+  color:white;
+  text-shadow: var(--white-text-shadow);
+  transition: background-color var(--short-transition) ease-in-out;
+}
+
+.student_name_tag_container:hover{
+  background-color: var(--main-color);
+}
+
+.add_classroom_modal_actions{
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  top: var(--medium-spacing);
+  right: var(--medium-spacing);
+  gap: var(--medium-spacing);
+}
+
+.add_classroom_modal_cancel_button{
+  width: 30px;
+  height:30px;
+  border-radius: var(--very-round);
+  background-color: red;
+  display:flex;
+  justify-content: center;
+  align-items:center;
+}
+
+
+.add_classroom_modal_accept_button{
+  display:flex;
+  width: 30px;
+  height:30px;
+  border-radius: var(--very-round);
+  background-color: var(--secondary-color);
+  justify-content: center;
+  align-items:center;
+} 
 
 .classrooms_stats_container {
   background-color: var(--secondary-color);

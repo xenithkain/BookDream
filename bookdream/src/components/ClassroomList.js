@@ -6,6 +6,7 @@ const ClassroomList = ({ classrooms }) => {
       {classrooms.length > 0 ? (
         <div className="classroom_list_container">
           {classrooms.map((classroom, index) => {
+            console.log(classroom);
             return (
               <div className="classroom_list_item" key={classroom.id}>
                 <div
@@ -24,8 +25,8 @@ const ClassroomList = ({ classrooms }) => {
                   <p style={{ fontSize: "var(--small2-font)" }}>
                     Students: {classroom.students.length}
                   </p>
-                  {classroom.books ? (
-                    <p>Books: {classroom.books.length}</p>
+                  {classroom._available_books ? (
+                    <p>Books: {classroom._available_books.length}</p>
                   ) : (
                     <p>Books: 0</p>
                   )}

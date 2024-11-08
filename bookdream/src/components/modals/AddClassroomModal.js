@@ -4,18 +4,33 @@ import { HexColorPicker } from "react-colorful";
 import ClassroomBookList from "../ClassroomBookList";
 import { fetchAvailableBooks } from "../../appwrite/appwriteConfig";
 import Book from "../Book";
-
+import StudentNameList from "../StudentNameList";
+import { FaXmark } from "react-icons/fa6";
+import { ImCheckmark } from "react-icons/im";
 function AddClassroomModal({ onSave, books }) {
   const { closeModal, isAddClassroomModalOpen } = useAddClassroomModal(); // Updated hook
-  const [modalFields, setModalFields] = useState({
-    name: "",
-    color: "",
-    chosenBooks: [],
-    students: [],
-  });
-  const [color, setColor] = useState("#aabbcc");
+  const [classroomName, setClassroomName] = useState("");
+  const [classroomColor, setClassroomColor] = useState("000000");
+  const [chosenBooks, setChosenBooks] = useState([]);
+  const [students, setStudents] = useState([]);
   const [availableBooks, setAvailableBooks] = useState([]);
   const [bookSearch, setBookSearch] = useState("");
+  const [studentInput, setStudentInput] = useState("");
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      setStudents((prev) => {
+        return [...prev, studentInput];
+      });
+      setStudentInput("");
+    }
+  };
+
+  const handleSave = () => {
+    onSave(classroomName, classroomColor, chosenBooks, students);
+    closeModal();
+  };
+
   useEffect(() => {
     const getAvaialbleBooks = async () => {
       let b = await fetchAvailableBooks();
@@ -39,29 +54,26 @@ function AddClassroomModal({ onSave, books }) {
     getAvaialbleBooks();
   }, []);
 
-  const toggleBookSelection = (bookId) => {
-    setModalFields((prev) => ({
-      ...prev,
-      chosenBooks: prev.chosenBooks.includes(bookId)
-        ? prev.chosenBooks.filter((id) => id !== bookId) // Remove book if already selected
-        : [...prev.chosenBooks, bookId], // Add book if not selected
-    }));
-  };
-
-  const handleSave = () => {
-    onSave(modalFields.name, modalFields.color, modalFields.chosenBooks);
-    closeModal();
-  };
-
-  const updateField = (field, value) => {
-    setModalFields((prev) => ({ ...prev, [field]: value }));
-  };
-
   if (!isAddClassroomModalOpen) return null; // Updated condition
 
   return (
     <>
-      <div className="add_classroom_modal_screen_overlay" onClick={closeModal}>
+      <div className="add_classroom_modal_screen_overlay">
+        <div className="add_classroom_modal_actions">
+          <div
+            className="add_classroom_modal_accept_button"
+            onClick={handleSave}
+          >
+            <ImCheckmark />
+          </div>
+          <div
+            className="add_classroom_modal_cancel_button"
+            onClick={closeModal}
+          >
+            <FaXmark />
+          </div>
+        </div>
+
         <div
           className="add_classroom_modal_container"
           onClick={(e) => {
@@ -74,25 +86,15 @@ function AddClassroomModal({ onSave, books }) {
               className="add_classroom_modal_text_input"
               type="text"
               placeholder="Enter Classroom Name"
-              onChange={(newName) =>
-                setModalFields((prev) => ({
-                  ...prev,
-                  name: newName,
-                }))
-              }
+              onChange={(newName) => setClassroomName(newName.target.value)}
             ></input>
           </div>
           <div className="add_classroom_modal_color_input add_classroom_modal_input">
             <label className="add_classroom_modal_label">Color</label>
             <HexColorPicker
               style={{ width: "100%" }}
-              color={modalFields.color}
-              onChange={(color) =>
-                setModalFields((prev) => ({
-                  ...prev,
-                  color: color,
-                }))
-              }
+              color={classroomColor}
+              onChange={(color) => setClassroomColor(color)}
             />
           </div>
           <div className="add_classroom_modal_books_input add_classroom_modal_input">
@@ -111,7 +113,7 @@ function AddClassroomModal({ onSave, books }) {
             <div className="add_classroom_modal_books_container">
               <ClassroomBookList
                 books={availableBooks}
-                setModalFields={setModalFields}
+                setChosenBooks={setChosenBooks}
                 bookSearch={bookSearch}
               />
             </div>
@@ -123,10 +125,16 @@ function AddClassroomModal({ onSave, books }) {
                 className="add_classroom_modal_text_input"
                 type="text"
                 placeholder="Enter Student Name"
+                value={studentInput}
+                onChange={(e) => setStudentInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                maxLength={50}
               ></input>
             </div>
 
-            <div className="add_classroom_modal_students_name_container"></div>
+            <div className="add_classroom_modal_students_name_container">
+              <StudentNameList students={students} setStudents={setStudents} />
+            </div>
           </div>
         </div>
       </div>

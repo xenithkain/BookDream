@@ -206,13 +206,25 @@ export const createClassroomDB = async (classroom) => {
     // Create the classroom in the database
     const uid = ID.unique(); // Generate a unique ID for the classroom
 
+    console.log("New classroom details:", {
+      id: uid,
+      name: classroom.name,
+      books: classroom.available_books,
+      color: classroom.color,
+    });
+
+    let newBooks = [];
+    classroom.available_books.forEach((book) => {
+      newBooks.push(book.id);
+    });
+
     const response = await databases.createDocument(
       databaseKey,
       classroomsCollection,
       uid,
       {
         name: classroom.name,
-        books: classroom.books,
+        books: newBooks,
         color: classroom.color,
       }
     );
@@ -220,25 +232,26 @@ export const createClassroomDB = async (classroom) => {
     console.log("Classroom created in DB:", response);
 
     // Update the classroom attribute of each chosen book
-    if (classroom.books && classroom.books.length > 0) {
+    if (classroom.available_books && classroom.available_books.length > 0) {
+      console.log("got here");
       await Promise.all(
-        classroom.books.map(async (bookId) => {
+        classroom._available_books.map(async (book) => {
           try {
             // Update the book document with the new classroom ID (only one classroom per book)
             await databases.updateDocument(
               databaseKey,
               booksCollection,
-              bookId,
+              book.id,
               {
                 classrooms: response.$id, // Assign the newly created classroom ID
               }
             );
 
             console.log(
-              `Updated book with ID ${bookId} to include new classroom ID ${response.$id}.`
+              `Updated book with ID ${book} to include new classroom ID ${response.$id}.`
             );
           } catch (error) {
-            console.error(`Error updating book ${bookId}:`, error);
+            console.error(`Error updating book ${book}:`, error);
           }
         })
       );
@@ -292,7 +305,7 @@ export const fetchAvailableBooks = async () => {
       (book) => !book.classrooms || book.classrooms.length === 0
     );
 
-    //console.log("Fetched books:", availableBooks); // Log filtered available books
+    console.log("Fetched books:", availableBooks); // Log filtered available books
 
     return availableBooks; // Return the filtered array of books
   } catch (error) {
