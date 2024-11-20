@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import BookList from "../components/BookList";
 import ScanModal from "../components/modals/ScanModal";
-import { useModal } from "../contexts/ScanModalContext";
+import { useScanBookModal } from "../contexts/ScanModalContext";
 import { getBooks, getTags, account } from "../appwrite/appwriteConfig";
 import Tag from "../components/Tag";
 import { sortList } from "../components/utility";
@@ -18,7 +18,7 @@ function BookshelvesPage({ setShowNav }) {
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
 
-  const { isScanModalOpen, closeModal } = useModal();
+  const { isScanModalOpen, closeModal } = useScanBookModal();
 
   useEffect(() => {
     setCheckedCount(Object.values(checkedBooks).filter(Boolean).length);

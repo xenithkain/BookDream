@@ -226,6 +226,7 @@ export const createClassroomDB = async (classroom) => {
         name: classroom.name,
         books: newBooks,
         color: classroom.color,
+        students: classroom.students,
       }
     );
 
@@ -261,7 +262,7 @@ export const createClassroomDB = async (classroom) => {
     return new Classroom(
       response.$id,
       classroom.name,
-      classroom.books,
+      classroom.students,
       classroom.available_books,
       classroom.checked_out_books,
       classroom.overdue_books,

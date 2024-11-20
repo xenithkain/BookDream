@@ -6,13 +6,12 @@ const ScanModalContext = createContext();
 // Create a provider component
 export const ScanModalProvider = ({ children }) => {
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
-  const [isBulk, setIsBulk] = useState(false);
 
-  const openModal = (x, y) => {
+  const openScanBookModal = (x, y) => {
     setIsScanModalOpen(true);
   };
 
-  const closeModal = () => {
+  const closeScanBookModal = () => {
     setIsScanModalOpen(false);
   };
 
@@ -20,10 +19,8 @@ export const ScanModalProvider = ({ children }) => {
     <ScanModalContext.Provider
       value={{
         isScanModalOpen,
-        openModal,
-        closeModal,
-        isBulk,
-        setIsBulk,
+        openScanBookModal,
+        closeScanBookModal,
       }}
     >
       {children}
@@ -31,4 +28,4 @@ export const ScanModalProvider = ({ children }) => {
   );
 };
 
-export const useModal = () => useContext(ScanModalContext);
+export const useScanBookModal = () => useContext(ScanModalContext);

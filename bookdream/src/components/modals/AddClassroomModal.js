@@ -10,7 +10,7 @@ import { ImCheckmark } from "react-icons/im";
 function AddClassroomModal({ onSave, books }) {
   const { closeModal, isAddClassroomModalOpen } = useAddClassroomModal(); // Updated hook
   const [classroomName, setClassroomName] = useState("");
-  const [classroomColor, setClassroomColor] = useState("000000");
+  const [classroomColor, setClassroomColor] = useState("#000000");
   const [chosenBooks, setChosenBooks] = useState([]);
   const [students, setStudents] = useState([]);
   const [availableBooks, setAvailableBooks] = useState([]);
@@ -59,17 +59,11 @@ function AddClassroomModal({ onSave, books }) {
   return (
     <>
       <div className="add_classroom_modal_screen_overlay">
-        <div className="add_classroom_modal_actions">
-          <div
-            className="add_classroom_modal_accept_button"
-            onClick={handleSave}
-          >
+        <div className="modal_actions">
+          <div className="modal_accept_button" onClick={handleSave}>
             <ImCheckmark />
           </div>
-          <div
-            className="add_classroom_modal_cancel_button"
-            onClick={closeModal}
-          >
+          <div className="modal_cancel_button" onClick={closeModal}>
             <FaXmark />
           </div>
         </div>

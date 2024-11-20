@@ -1,18 +1,18 @@
-import { useModal } from "../../contexts/ScanModalContext";
+import { useScanBookModal } from "../../contexts/ScanModalContext";
 
 function BookAdditionsModal({ isOpen, setIsOpen, position, onClose }) {
-  const { openModal, setIsBulk } = useModal();
+  const { openScanBookModal, setIsBulk } = useScanBookModal();
 
   const ScanBookClick = () => {
     setIsOpen(false);
     setIsBulk(false);
-    openModal();
+    openScanBookModal();
   };
 
   const BulkScanBookClick = () => {
     setIsOpen(false);
     setIsBulk(true);
-    openModal();
+    openScanBookModal();
   };
 
   if (!isOpen) return;

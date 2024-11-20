@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 
 :root {
+  --main-color-darkest: rgb(24, 24, 33);
   --main-color-darker: rgb(43, 43, 58);
   --main-color: rgb(66, 66, 82);
   --main-color-lighter: rgb(87, 87, 93);
@@ -19,43 +20,39 @@
   --round: 20px;
   --very-round: 50px;
 
+  --dashboard-box-shadow: 0.1rem 0.1rem var(--secondary-color-lighter),
+    -0.1rem -0.1rem var(--secondary-color-lighter),
+    -0.1rem 0.1rem var(--secondary-color-lighter),
+    0.1rem -0.1rem var(--secondary-color-lighter);
+
   --thin-border: 0.25rem;
   --thick-border: 0.5rem;
 
-  --small-font: 0.5rem;
-  --small2-font: 1rem;
+  --tiny-font: 0.5rem;
+  --small-font: 1rem;
   --medium-font: 1.5rem;
   --big-font: 2rem;
   --bigger-font: 3.5rem;
 
   --white-text-shadow: -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black,
-  2px 2px 0 black;
+    2px 2px 0 black;
 
   --main-font-family: Nunito;
 
-  --short-transition: .1s;
-  --medium-transition: .5s;
+  --short-transition: 0.1s;
+  --medium-transition: 0.5s;
   --long-transition: 1s;
 }
 
 * {
   font-family: var(--main-font-family);
+  padding: 0;
+  margin: 0;
 }
 
-.horizontal-alligner {
+.horizontal_alligner {
   display: flex;
   flex-direction: row;
-}
-
-.dashboard_title {
-  width:100%;
-  text-wrap: nowrap;
-  background-color: var(--main-color-darker);
-  color:white;
-  font-size: var(--big-font);
-  font-weight: bold;
-  text-align: start;
-  padding: var(--small-spacing);
 }
 
 .medium_title {
@@ -72,30 +69,14 @@
   justify-content: center;
 }
 
-.dashboard_page_container {
-  width: 100vw;
-  height: 100vh;
-  background-color: var(--main-color);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.dashboard_page_contents{
-  display: grid;
-  grid-template-rows: repeat(20, 1fr);
-  grid-template-columns: repeat(25, 1fr);
-  background-color: var(--main-color-darker);
-}
-
 .navbar_container {
   display: flex;
   position: absolute;
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-evenly;
-  background-color: var(--main-color-darker);
+  background-color: var(--main-color-darkest);
+  box-shadow: var(--dashboard-box-shadow);
 
   height: 25%;
   width: fit-content;
@@ -135,14 +116,207 @@
   font-size: var(--big-font);
 }
 
-.recent_books_container {
-  background-color: var(--secondary-color);
-  box-shadow: 0rem -0.25rem 0 0.3rem var(--main-color-darker);
-  grid-column: 3 / 11;
-  grid-row: 3 / 19;
-  border-radius: var(--round);
+.dashboard_page_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: var(--main-color-darkest);
+  gap: var(--medium-spacing);
+  color: white;
 }
 
+.dashboard_title {
+  width: 100%;
+  justify-self: flex-start;
+  flex-grow: 0.05;
+  background-color: var(--main-color-darkest);
+  box-shadow: var(--dashboard-box-shadow);
+  color: white;
+  font-size: var(--big-font);
+  font-weight: bold;
+  text-align: start;
+  padding: var(--small-spacing);
+}
+
+.dashboard_page_contents {
+  display: grid;
+  width: 98%;
+  height: 90%;
+  max-width: 98%;
+  max-height: 90%;
+  grid-template-columns: repeat(40, 1fr);
+  grid-template-rows: repeat(20, 1fr);
+  flex-grow: 1;
+  border-radius: var(--slightly-round);
+  /*background-color: var(--main-color-darker);*/
+
+  padding: 1rem;
+}
+
+.classrooms_stats_container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  grid-area: 2 / 2 / 19 / 27;
+  background-color: var(--main-color-darkest);
+  box-shadow: var(--dashboard-box-shadow);
+  border-radius: var(--slightly-round);
+}
+
+.classrooms_stats_refresh_button {
+  width: fit-content;
+  height: fit-content;
+  font-size: var(--small2-font);
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 1rem;
+}
+.classrooms_stats_refresh_button:hover {
+  border-bottom: 0.2rem solid var(--secondary-color-lighter);
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+}
+.classroom_stats_title {
+  align-self: center;
+}
+
+.recent_books_container {
+  background-color: var(--main-color-darkest);
+  box-shadow: var(--dashboard-box-shadow);
+  border-radius: var(--slightly-round);
+  grid-area: 2 / 28 / 16 / 40;
+}
+
+.actions_container {
+  background-color: var(--main-color-darkest);
+  box-shadow: var(--dashboard-box-shadow);
+  border-radius: var(--slightly-round);
+  grid-area: 17 / 29 / 19 / 39;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.action_scan_book {
+  width: 100%;
+  height: 100%;
+  font-size: var(--bigger-font);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action_add_classroom {
+  width: 100%;
+  height: 100%;
+  font-size: var(--bigger-font);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action:hover {
+  background-color: var(--secondary-color-lighter);
+  border-radius: var(--slightly-round);
+  cursor: pointer;
+}
+
+.classroom_list_container {
+  border-radius: var(--round);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--larger-spacing);
+  gap: var(--large-spacing);
+  overflow-y: auto;
+}
+
+.classroom_list_item {
+  border-radius: var(--slightly-round);
+  box-shadow: var(--dashboard-box-shadow);
+  background-color: var(--main-color-darker);
+  max-height: 200px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.classroom_list_item_divider {
+  border-radius: var(--very-round);
+  height: 80%;
+  width: var(--large-spacing);
+  margin-left: var(--medium-spacing);
+}
+
+.classroom_list_item_content {
+  margin-left: var(--small-spacing);
+}
+
+.classroom_list_overdue_indicator_container {
+  display: flex;
+  flex-direction: row;
+  align-self: flex-start;
+  justify-self: flex-end;
+  align-items: center;
+  margin: var(--large-spacing);
+  margin-left: auto;
+}
+
+.classroom_list_overdue_dropdown {
+  height: var(--large-spacing);
+  width: var(--large-spacing);
+
+  border-radius: var(--very-round);
+
+  margin-right: var(--extra-small-spacing);
+}
+
+.classroom_list_overdue_dropdown:hover {
+  background-color: var(--secondary-color-lighter);
+}
+
+.classroom_list_overdue_indicator_light {
+  height: var(--large-spacing);
+  width: var(--large-spacing);
+  border-radius: var(--very-round);
+  margin-left: var(--large-spacing);
+}
+
+.modal_actions {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  top: var(--medium-spacing);
+  right: var(--medium-spacing);
+  gap: var(--medium-spacing);
+}
+
+.modal_cancel_button {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--very-round);
+  background-color: red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal_accept_button {
+  display: flex;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--very-round);
+  background-color: var(--secondary-color);
+  justify-content: center;
+  align-items: center;
+}
+
+/*Add Classroom Modal*/
 .add_classroom_modal_screen_overlay {
   width: 100vw;
   height: 100vh;
@@ -151,14 +325,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
 
 .add_classroom_modal_container {
   width: 70vw;
   height: 90vh;
-  background-color: var(--main-color);
-  box-shadow: 0rem -0.25rem 0 0.3rem var(--secondary-color);
+  background-color: var(--main-color-darkest);
+  box-shadow: var(--dashboard-box-shadow);
   border-radius: var(--round);
   position: relative;
   display: flex;
@@ -193,7 +366,7 @@
 }
 
 .add_classroom_modal_name_input {
-  flex:0.1 1 auto;
+  flex: 0.1 1 auto;
   display: flex;
   flex-direction: row;
 }
@@ -242,7 +415,7 @@
   transition: background-color var(--short-transition) ease-in-out;
 }
 
-.classroom_book_container:hover{
+.classroom_book_container:hover {
   background-color: var(--main-color);
 }
 
@@ -274,182 +447,167 @@
   width: 100%;
   height: 100%;
   background-color: var(--main-color-lighter);
-  padding:var(--small-spacing);
+  padding: var(--small-spacing);
   gap: var(--small-spacing);
-  display:flex;
+  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   overflow-y: auto;
 }
 
-.student_name_tag_container{
-  display:flex;
+.student_name_tag_container {
+  display: flex;
   flex-direction: row;
   justify-content: center;
   padding: var(--small-spacing);
   border-radius: var(--round);
   background-color: var(--main-color-darker);
-  width:fit-content;
+  width: fit-content;
   min-width: 100px;
-  height:fit-content;
-  color:white;
+  height: fit-content;
+  color: white;
   text-shadow: var(--white-text-shadow);
   transition: background-color var(--short-transition) ease-in-out;
 }
 
-.student_name_tag_container:hover{
+.student_name_tag_container:hover {
   background-color: var(--main-color);
 }
 
-.add_classroom_modal_actions{
+/*Scan Modal*/
+
+.scan_modal_screen_overlay {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--modal-screen-overlay-color);
   position: absolute;
   display: flex;
-  flex-direction: row;
-  top: var(--medium-spacing);
-  right: var(--medium-spacing);
-  gap: var(--medium-spacing);
-}
-
-.add_classroom_modal_cancel_button{
-  width: 30px;
-  height:30px;
-  border-radius: var(--very-round);
-  background-color: red;
-  display:flex;
   justify-content: center;
-  align-items:center;
+  align-items: center;
 }
 
-
-.add_classroom_modal_accept_button{
-  display:flex;
-  width: 30px;
-  height:30px;
-  border-radius: var(--very-round);
-  background-color: var(--secondary-color);
-  justify-content: center;
-  align-items:center;
-} 
-
-.classrooms_stats_container {
-  background-color: var(--secondary-color);
-  box-shadow: 0rem -0.25rem 0 0.3rem var(--main-color-darker);
-  grid-column: 12 / 25;
-  grid-row: 3 / 15;
+.scan_modal_container {
+  width: 70vw;
+  height: 90vh;
+  background-color: var(--main-color-darkest);
+  box-shadow: var(--dashboard-box-shadow);
   border-radius: var(--round);
-  display: grid;
-  grid-template-columns: repeat(20, 1fr);
-  grid-template-rows: repeat(20, 1fr);
-}
-
-.classrooms_stats_refresh_button {
-  width: 1rem;
-  height: 1rem;
-  border: var(--thin-border) solid black;
-  background-color: var(--secondary-color);
-
-  grid-area: 1/1/2/2;
-}
-.classrooms_stats_refresh_button:hover {
-  background-color: var(--secondary-color-lighter);
-}
-.classroom_stats_title {
-  grid-area: 1/8/2/14;
-}
-.classroom_list_container {
-  border-radius: var(--round);
-  width: 100%;
-  height: 100%;
-  grid-area: 2/1/21/21;
+  position: relative;
   display: flex;
   flex-direction: column;
-  padding: var(--extra-small-spacing);
-  gap: var(--small-spacing);
+  padding: var(--largest-spacing);
+  gap: var(--largest-spacing);
 }
 
-.classroom_list_item {
-  border: var(--thin-border) solid black;
+.scan_modal_status {
+  background-color: var(--main-color-darker);
+  padding: var(--small-spacing);
   border-radius: var(--round);
+  align-self: center;
+  font-size: var(--medium-font);
+}
+
+.scan_modal_available_tags_container {
+  background-color: var(--main-color-darker);
+  padding: var(--small-spacing);
+  border-radius: var(--round);
+  align-self: center;
+  font-size: var(--small-font);
+}
+
+.scan_modal_book_search_container {
   width: 100%;
   height: 100%;
-  max-height: 200px;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.classroom_list_item_divider {
-  border-radius: var(--very-round);
-  height: 80%;
-  width: var(--large-spacing);
-  margin-left: var(--medium-spacing);
-}
-
-.classroom_list_item_content {
-  margin-left: var(--small-spacing);
-}
-
-.classroom_list_overdue_indicator_container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-left: auto;
-  margin-right: var(--small-spacing);
-}
-
-.classroom_list_overdue_dropdown {
-  height: var(--large-spacing);
-  width: var(--large-spacing);
-
-  border-radius: var(--very-round);
-
-  margin-right: var(--extra-small-spacing);
-}
-
-.classroom_list_overdue_dropdown:hover {
-  background-color: var(--secondary-color-lighter);
-}
-
-.classroom_list_overdue_indicator_light {
-  height: var(--large-spacing);
-  width: var(--large-spacing);
-  border-radius: var(--very-round);
-  margin-left: var(--large-spacing);
-}
-
-.actions_container {
-  background-color: var(--secondary-color);
-  box-shadow: 0rem -0.25rem 0 0.3rem var(--main-color-darker);
-  grid-column: 13 / 23;
-  grid-row: 16 / 18;
+  max-height: 600px;
+  background-color: var(--main-color-darker);
+  padding: var(--small-spacing);
   border-radius: var(--round);
+  align-self: center;
+  font-size: var(--small-font);
+  display: flex;
+  flex-direction: column;
+}
+
+.scan_modal_book_search_type {
+  width: 30%;
+  margin-left: var(--small-spacing);
+  background-color: var(--main-color-lighter);
+  margin-bottom: var(--small-spacing);
+  border-radius: var(--slightly-round);
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
 }
 
-.action_scan_book {
-  width: 100%;
-  height: 100%;
-  font-size: var(--bigger-font);
+.type_title {
+  width: 50%;
+  height: 90%;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-top-left-radius: var(--slightly-round);
+  border-bottom-left-radius: var(--slightly-round);
 }
 
-.action_add_classroom {
-  width: 100%;
-  height: 100%;
-  font-size: var(--bigger-font);
+.type_author {
+  width: 50%;
+  height: 90%;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-top-right-radius: var(--slightly-round);
+  border-bottom-right-radius: var(--slightly-round);
 }
 
-.action:hover {
+.type_title:hover {
   background-color: var(--secondary-color-lighter);
-  border-radius: var(--round);
   cursor: pointer;
+}
+
+.type_author:hover {
+  background-color: var(--secondary-color-lighter);
+  cursor: pointer;
+}
+
+.type_selected {
+  background-color: var(--secondary-color);
+}
+
+.scan_modal_book_search {
+  width: 30%;
+  height: 100%;
+  border-radius: var(--round);
+  border: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-left: var(--large-spacing);
+  background-color: var(--main-color-lighter);
+  color: white;
+  margin-left: var(--small-spacing);
+}
+
+.scan_modal_searched_books_container {
+  margin-top: var(--small-spacing);
+  background-color: var(--main-color-lighter);
+  border-radius: var(--slightly-round);
+  height: 100%;
+  padding: var(--small-spacing);
+}
+
+.scan_modal_selected_books_container {
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+  margin-left: auto;
+  margin-right: 20rem;
+  min-height: 350px;
+  background-color: var(--main-color-darker);
+  padding: var(--small-spacing);
+  border-radius: var(--round);
+  align-self: center;
+  font-size: var(--small-font);
+  display: flex;
+  flex-direction: column;
 }

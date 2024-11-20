@@ -1,4 +1,8 @@
-import { useModal } from "../../contexts/ScanModalContext";
+import { useScanBookModal } from "../../contexts/ScanModalContext";
+import { FaXmark } from "react-icons/fa6";
+import { ImCheckmark } from "react-icons/im";
+import TagList from "../TagList";
+
 import {
   getBooks,
   checkForBook,
@@ -25,24 +29,56 @@ import {
 } from "../../appwrite/appwriteConfig";
 import Tag from "../Tag";
 import { sortList, api_key } from "../utility";
+import BookList from "../BookList";
 
-function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
-  const { isScanModalOpen, closeModal, isBulk } = useModal();
+function ScanModal({ isOpen, books, setBooks }) {
+  const { isScanModalOpen, closeScanBookModal } = useScanBookModal();
+  const [isbn, setIsbn] = useState("");
+  const [scannedIsbn, setScaneedIsbn] = useState("");
+  const [scanModalStatus, setScanModalStatus] = useState("");
+  const [bookSearch, setBookSearch] = useState("");
+  const [searchHasFocus, setSearchHasFocus] = useState(false);
+  const [searchType, setSearchType] = useState("Title");
+
   const [userDetails, setUserDetails] = useState();
   const [currentBook, setCurrentBook] = useState(null);
   const [scanState, setScanState] = useState("No Book Scanned");
-  const [isbn, setIsbn] = useState("");
+
   const [scannedBooks, setScannedBooks] = useState([]);
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
 
   useEffect(() => {
+    setScanModalStatus(
+      "Please Use the Search Bar To Find A Book, Or Scan A Bar Code."
+    );
+    const getData = account.get();
+    getData.then(
+      (response) => {
+        setUserDetails(response);
+      },
+      (error) => {
+        console.error(error);
+        console.log("There was an error");
+      }
+    );
+  }, []);
+
+  useEffect(() => {
     const handleKeyPress = (e) => {
       if (e.key === "Enter") {
-        createBook(isbn);
-        setIsbn("");
+        if (searchHasFocus) {
+          handleBookSearch();
+        } else {
+          setScaneedIsbn(isbn);
+          setScanModalStatus("Scanned Book with ISBN: " + isbn);
+          createBook(isbn);
+          setIsbn("");
+        }
       } else if (e.key !== "Enter") {
-        setIsbn((prevIsbn) => prevIsbn + e.key);
+        if (!searchHasFocus) {
+          setIsbn((prevIsbn) => prevIsbn + e.key);
+        }
       }
     };
 
@@ -52,6 +88,45 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
       document.removeEventListener("keypress", handleKeyPress);
     };
   });
+
+  const handleSave = () => {};
+
+  const handleBookSearch = () => {
+    let works = [];
+    for (let i = 1; i < 3; i++) {
+      httpGetAsync(
+        `https://openlibrary.org/search.json?q=${encodeURIComponent(
+          bookSearch
+        )}&sort=editions&page=${i}&fields=ratings_average,ratings_count,author_name,author_key,
+        edition_count,edition_key&language=eng`,
+        async (response) => {
+          if (response) {
+            response.docs.map((result) => {
+              let key = result.ratings_count;
+              if (key) {
+                if (!works.includes(result)) {
+                  let foundSpot = false;
+                  for (let i = 0; i < works.length; i++) {
+                    if (key >= works[i].ratings_count) {
+                      works.splice(i, 0, result);
+                      foundSpot = true;
+                      break;
+                    }
+                  }
+                  if (!foundSpot) works.push(result);
+                }
+              }
+            });
+          } else {
+            setScanState("Book Not Found");
+          }
+        }
+      );
+    }
+
+    console.log(works);
+  };
+
   const handleBookUpload = async () => {
     if (currentBook) {
       const checkedBook = await checkForBook(currentBook.getIsbn());
@@ -72,7 +147,6 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
           userDetails.$id,
           { books: updatedBooks }
         );
-        setBookScanned(true);
         console.log("User document updated with new book ID.");
         return;
       } else {
@@ -102,17 +176,10 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
           userDetails.$id,
           { books: updatedBooks }
         );
-        setBookScanned(true);
         console.log("User document updated with new book ID.");
       }
     }
   };
-
-  useEffect(() => {
-    if (currentBook) {
-      handleBookUpload();
-    }
-  }, [currentBook]);
 
   useEffect(() => {
     async function fetchTags() {
@@ -123,17 +190,7 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
     fetchTags();
   }, [isScanModalOpen]);
 
-  useEffect(() => {
-    const getData = account.get();
-    getData.then(
-      (response) => {
-        setUserDetails(response);
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-  }, [currentBook]);
+  useEffect(() => {}, [currentBook]);
 
   const createBook = async (isbn) => {
     if (!isbn || (isbn.length !== 10 && isbn.length !== 13)) {
@@ -159,7 +216,7 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
       newBook.setCover(coverExists ? urls : "");
       newBook.setTags(selectedTags.map((tag) => tag.name));
       newBook.setId(checkedBook.$id);
-      if (checkedBook.authors.length > 0) {
+      if (checkedBook.authors && checkedBook.authors.length > 0) {
         newBook.setAuthors(checkedBook.authors || []);
       }
       console.log("creating book from memeory");
@@ -206,9 +263,8 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
 
       // Save book to the database
       setCurrentBook(newBook);
-      setBookScanned(true);
     } else {
-      setScanState("Book Already Scanned in This Session");
+      setScanModalStatus("Book Already Scanned in This Session");
     }
   };
 
@@ -244,68 +300,75 @@ function ScanModal({ isOpen, books, setBooks, setBookScanned }) {
 
   return (
     <>
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="ScanModelContainer"
-        style={{
-          position: "absolute",
-          left: "${window.innerWidth} - 50vw",
-          top: "${window.innerHeight} - 95vh",
-          display: isScanModalOpen ? "block" : "none",
-        }}
-      >
-        <div className="ScanTagContainer">
-          <p>Tags to Add</p>
-          <div className="TagList">
-            {selectedTags.map((tag, index) => {
-              return (
-                <div key={tag.name}>
-                  <Tag
-                    name={tag.name}
-                    shape={tag.shape}
-                    color={tag.color}
-                    textcolor={tag.textcolor}
-                    description={tag.description}
-                    handleMouseUp={() => handleRemoveScanTag(tag.name)}
-                  />
-                </div>
-              );
-            })}
+      <div className="scan_modal_screen_overlay">
+        <div className="modal_actions">
+          <div className="modal_accept_button" onClick={handleSave}>
+            <ImCheckmark />
+          </div>
+          <div className="modal_cancel_button" onClick={closeScanBookModal}>
+            <FaXmark />
           </div>
         </div>
-        <div className="ScanTagContainer">
-          <p>Tags</p>
-          <div className="TagList">
-            {tags.map((tag, index) => {
-              return (
-                <div key={tag.name}>
-                  <Tag
-                    name={tag.name}
-                    shape={tag.shape}
-                    color={tag.color}
-                    textcolor={tag.textcolor}
-                    description={tag.description}
-                    handleMouseUp={() => handleAddScanTag(tag.name)}
-                  />
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="scan_modal_container"
+        >
+          <div className="scan_modal_status">{scanModalStatus}</div>
+          <div className="scan_modal_book_search_container">
+            <div className="horizontal-alligner">
+              <div>Search Type</div>
+              <div className="scan_modal_book_search_type">
+                <div
+                  className={`type_title ${
+                    searchType == "Title" ? "type_selected" : ""
+                  }`}
+                  onClick={() => setSearchType("Title")}
+                >
+                  Title
                 </div>
-              );
-            })}
+                <div
+                  style={{
+                    height: "90%",
+                    width: "2px",
+                    backgroundColor: "var(--main-color-darker)",
+                  }}
+                />
+                <div
+                  className={`type_author ${
+                    searchType == "Author" ? "type_selected" : ""
+                  }`}
+                  onClick={() => setSearchType("Author")}
+                >
+                  Author
+                </div>
+              </div>
+            </div>
+            <div className="horizontal_alligner">
+              <label>Name</label>
+              <input
+                className="scan_modal_book_search"
+                type="text"
+                placeholder="Search for Book"
+                onChange={(newBook) => setBookSearch(newBook.target.value)}
+                onFocus={() => setSearchHasFocus(true)}
+                onBlur={() => setSearchHasFocus(false)}
+              ></input>
+            </div>
+            <div className="scan_modal_searched_books_container">
+              {/* <BookList /> */}
+            </div>
           </div>
-        </div>
-        {currentBook ? (
-          currentBook.title + " was added to your bookshelf!"
-        ) : (
-          <></>
-        )}
-        <div className="ScannedBooksContainer">
-          {scannedBooks.length > 0 ? (
-            scannedBooks.map((book, index) => {
-              const isbn = Object.keys(book)[0];
-              return <BookTile key={index} book={book} />;
-            })
-          ) : (
-            <></>
-          )}
+          <div className="horizontal_alligner">
+            <div className="scan_modal_available_tags_container">
+              <TagList />
+            </div>
+            <div className="scan_modal_current_tags_container"></div>
+            <div className="scan_modal_selected_books_container">
+              <div style={{ fontSize: "1.2rem" }}>Selected Books</div>
+              <BookList />
+            </div>
+            <div className="scan_modal_add_books_button"></div>
+          </div>
         </div>
       </div>
     </>
