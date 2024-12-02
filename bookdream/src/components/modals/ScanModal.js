@@ -39,8 +39,11 @@ function ScanModal({ isOpen, books, setBooks }) {
   const [bookSearch, setBookSearch] = useState("");
   const [searchHasFocus, setSearchHasFocus] = useState(false);
   const [searchType, setSearchType] = useState("Title");
-
+  const [searchedBooks, setSearchedBooks] = useState([]);
   const [userDetails, setUserDetails] = useState();
+  const [checkedBooks, setCheckedBooks] = useState([]);
+  const [selectedBooks, setSelectedBooks] = useState([]);
+
   const [currentBook, setCurrentBook] = useState(null);
   const [scanState, setScanState] = useState("No Book Scanned");
 
@@ -89,94 +92,257 @@ function ScanModal({ isOpen, books, setBooks }) {
     };
   });
 
-  const handleSave = () => {};
+  const handleSave = () => {
+    handleBookUpload();
+  };
 
-  const handleBookSearch = () => {
+  const handleBookSearch = async () => {
+    setSearchedBooks([]);
     let works = [];
+    let editions = [];
+
+    // Create an array of promises for API calls
+    const fetchPromises = [];
     for (let i = 1; i < 3; i++) {
-      httpGetAsync(
-        `https://openlibrary.org/search.json?q=${encodeURIComponent(
-          bookSearch
-        )}&sort=editions&page=${i}&fields=ratings_average,ratings_count,author_name,author_key,
-        edition_count,edition_key&language=eng`,
-        async (response) => {
-          if (response) {
-            response.docs.map((result) => {
-              let key = result.ratings_count;
-              if (key) {
-                if (!works.includes(result)) {
-                  let foundSpot = false;
-                  for (let i = 0; i < works.length; i++) {
-                    if (key >= works[i].ratings_count) {
-                      works.splice(i, 0, result);
-                      foundSpot = true;
-                      break;
-                    }
+      const promise = new Promise((resolve) => {
+        httpGetAsync(
+          `https://openlibrary.org/search.json?q=${encodeURIComponent(
+            bookSearch
+          )}&sort=editions&page=${i}&fields=ratings_average,ratings_count,author_name,author_key,edition_count,edition_key,key&language=eng`,
+          (response) => {
+            if (response) {
+              const sortedResults = response.docs.filter(
+                (result) => result.ratings_count
+              );
+              sortedResults.forEach((result) => {
+                let foundSpot = false;
+                for (let j = 0; j < works.length; j++) {
+                  if (result.ratings_count >= works[j].ratings_count) {
+                    works.splice(j, 0, result);
+                    foundSpot = true;
+                    break;
                   }
-                  if (!foundSpot) works.push(result);
                 }
-              }
-            });
-          } else {
-            setScanState("Book Not Found");
+                if (!foundSpot) works.push(result);
+              });
+            } else {
+              setScanState("Book Not Found");
+            }
+            resolve();
           }
-        }
-      );
+        );
+      });
+      fetchPromises.push(promise);
     }
 
-    console.log(works);
+    await Promise.all(fetchPromises);
+    fetchPromises.length = 0;
+
+    for (let i = 0; i < works.length; i++) {
+      let promise = new Promise((resolve) => {
+        httpGetAsync(
+          `https://openlibrary.org${works[i].key}/editions.json`,
+          async (response) => {
+            if (response) {
+              for (let j = 0; j < response.entries.length; j++) {
+                if (
+                  response.entries[j].languages &&
+                  response.entries[j].languages[0].key == "/languages/eng" &&
+                  response.entries[j].covers
+                ) {
+                  editions.push(response.entries[j]);
+                }
+              }
+            }
+            resolve();
+          }
+        );
+      });
+      fetchPromises.push(promise);
+    }
+
+    await Promise.all(fetchPromises);
+
+    if (editions.length == 0) {
+      setScanModalStatus("Couldn't Find Any Titles for That Search");
+    } else {
+      setScanModalStatus(`Found Titles for That Search`);
+    }
+
+    editions.sort((a, b) => {
+      const titleA = a.title.toLowerCase();
+      const titleB = b.title.toLowerCase();
+      const targetTitle = bookSearch.toLowerCase();
+
+      // 1. Exact matches get the highest priority
+      const isExactMatchA = titleA === targetTitle;
+      const isExactMatchB = titleB === targetTitle;
+      if (isExactMatchA && !isExactMatchB) return -1; // `a` goes first
+      if (!isExactMatchA && isExactMatchB) return 1; // `b` goes first
+
+      // 2. Titles that contain the target but aren't exact matches
+      const containsTitleA = titleA.includes(targetTitle);
+      const containsTitleB = titleB.includes(targetTitle);
+      if (containsTitleA && !containsTitleB) return -1; // `a` goes first
+      if (!containsTitleA && containsTitleB) return 1; // `b` goes first
+
+      // 3. Push editions with "box set" or similar keywords to the bottom
+      const isBoxSetA = /box set|collection|set of/i.test(titleA);
+      const isBoxSetB = /box set|collection|set of/i.test(titleB);
+      if (isBoxSetA && !isBoxSetB) return 1; // `b` goes first
+      if (!isBoxSetA && isBoxSetB) return -1; // `a` goes first
+
+      const extractNumber = (title) => {
+        const match = title.match(/(\d+)/);
+        return match ? parseInt(match[1], 10) : Infinity; // Return Infinity if no number is found
+      };
+
+      const numberA = extractNumber(titleA);
+      const numberB = extractNumber(titleB);
+
+      if (numberA !== numberB) {
+        return numberA - numberB; // Prioritize lower numbers
+      }
+
+      if (a.covers && !b.covers) return 1;
+      if (!a.covers && b.covers) return -1;
+
+      // 4. Fallback: Alphabetical sorting for stability
+      return titleA.localeCompare(titleB);
+    });
+    console.log(editions);
+    let books = [];
+    for (let i = 0; i < 20; i++) {
+      let currEdition = editions[i];
+      if (currEdition && currEdition.title) {
+        books.push({
+          title: currEdition.title || "Unknown Title",
+          authors:
+            currEdition.authors && currEdition.authors.length > 0
+              ? currEdition.authors[0].key
+              : "Unknown Author",
+          genres: currEdition.subjects
+            ? currEdition.subjects
+            : currEdition.genres
+            ? currEdition.genres
+            : [],
+          covers: currEdition.covers
+            ? [
+                `https://covers.openlibrary.org/b/id/${currEdition.covers[0]}-S.jpg`,
+                `https://covers.openlibrary.org/b/id/${currEdition.covers[0]}-M.jpg`,
+                `https://covers.openlibrary.org/b/id/${currEdition.covers[0]}-L.jpg`,
+              ]
+            : [],
+          isbn: currEdition.isbn_13
+            ? currEdition.isbn_13[0]
+            : currEdition.isbn_10
+            ? currEdition.isbn_10[0]
+            : "Unknown ISBN",
+        });
+      }
+    }
+    console.log(books);
+    createBooksForSearch(books);
+  };
+
+  const createBooksForSearch = (books) => {
+    for (let book in books) {
+      setSearchedBooks((previousBooks) => {
+        return [
+          ...previousBooks,
+          new Book(
+            books[book].title,
+            books[book].authors,
+            books[book].genres,
+            books[book].covers,
+            [],
+            books[book].isbn,
+            false,
+            ID.unique()
+          ),
+        ];
+      });
+    }
+  };
+
+  useEffect(() => {
+    setCheckedBooks(new Array(searchedBooks.length).fill(false));
+  }, [searchedBooks]);
+
+  useEffect(() => {
+    console.log("Checked books from createBooks: " + checkedBooks);
+  }, [checkedBooks]);
+
+  const addSearchedBooks = () => {
+    console.log(searchedBooks.length);
+    console.log(checkedBooks);
+    for (let i = 0; i < searchedBooks.length; i++) {
+      if (checkedBooks[i] == true) {
+        console.log("Adding book");
+        setSelectedBooks((prevBooks) => {
+          return [...prevBooks, searchedBooks[i]];
+        });
+        setCheckedBooks((prevBooks) => {
+          let newBooks = prevBooks;
+          newBooks[i] = false;
+          return newBooks;
+        });
+      }
+    }
   };
 
   const handleBookUpload = async () => {
-    if (currentBook) {
-      const checkedBook = await checkForBook(currentBook.getIsbn());
-      if (checkedBook != null) {
-        const userDocument = await databases.getDocument(
-          databaseKey,
-          usersCollection,
-          userDetails.$id
-        );
-        console.log("User books: " + userDocument.books);
-        const updatedBooks = userDocument.books
-          ? [...userDocument.books, checkedBook.$id]
-          : [checkedBook.$id];
-        console.log("Updated books: " + updatedBooks);
-        await databases.updateDocument(
-          databaseKey,
-          usersCollection,
-          userDetails.$id,
-          { books: updatedBooks }
-        );
-        console.log("User document updated with new book ID.");
-        return;
-      } else {
-        // Add book to the Books collection
-        const response = await databases.createDocument(
-          databaseKey,
-          booksCollection,
-          currentBook.getId(),
-          currentBook.returnJson()
-        );
-        console.log("Book added:", response);
+    if (selectedBooks && selectedBooks.length > 0) {
+      for (let i = 0; i < selectedBooks.length; i++) {
+        const checkedBook = await checkForBook(selectedBooks[i].getIsbn());
+        if (checkedBook != null) {
+          const userDocument = await databases.getDocument(
+            databaseKey,
+            usersCollection,
+            userDetails.$id
+          );
+          console.log("User books: " + userDocument.books);
+          const updatedBooks = userDocument.books
+            ? [...userDocument.books, checkedBook.$id]
+            : [checkedBook.$id];
+          console.log("Updated books: " + updatedBooks);
+          await databases.updateDocument(
+            databaseKey,
+            usersCollection,
+            userDetails.$id,
+            { books: updatedBooks }
+          );
+          console.log("User document updated with new book ID.");
+          return;
+        } else {
+          // Add book to the Books collection
+          const response = await databases.createDocument(
+            databaseKey,
+            booksCollection,
+            selectedBooks[i].getId(),
+            selectedBooks[i].returnJson()
+          );
+          console.log("Book added:", response);
 
-        // Update the user's document to include the newly created book
-        const userDocument = await databases.getDocument(
-          databaseKey,
-          usersCollection,
-          userDetails.$id
-        );
+          // Update the user's document to include the newly created book
+          const userDocument = await databases.getDocument(
+            databaseKey,
+            usersCollection,
+            userDetails.$id
+          );
 
-        const updatedBooks = userDocument.books
-          ? [...userDocument.books, currentBook.getId()]
-          : [currentBook.getId()];
+          const updatedBooks = userDocument.books
+            ? [...userDocument.books, selectedBooks[i].getId()]
+            : [selectedBooks[i].getId()];
 
-        await databases.updateDocument(
-          databaseKey,
-          usersCollection,
-          userDetails.$id,
-          { books: updatedBooks }
-        );
-        console.log("User document updated with new book ID.");
+          await databases.updateDocument(
+            databaseKey,
+            usersCollection,
+            userDetails.$id,
+            { books: updatedBooks }
+          );
+          console.log("User document updated with new book ID.");
+        }
       }
     }
   };
@@ -355,7 +521,23 @@ function ScanModal({ isOpen, books, setBooks }) {
               ></input>
             </div>
             <div className="scan_modal_searched_books_container">
-              {/* <BookList /> */}
+              {searchedBooks && searchedBooks.length > 0 ? (
+                <>
+                  <BookList
+                    books={searchedBooks}
+                    checkedBooks={checkedBooks}
+                    setCheckedBooks={setCheckedBooks}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
+            <div
+              className="scan_modal_book_search_accept"
+              onClick={() => addSearchedBooks()}
+            >
+              <p>Add</p>
             </div>
           </div>
           <div className="horizontal_alligner">
@@ -365,7 +547,11 @@ function ScanModal({ isOpen, books, setBooks }) {
             <div className="scan_modal_current_tags_container"></div>
             <div className="scan_modal_selected_books_container">
               <div style={{ fontSize: "1.2rem" }}>Selected Books</div>
-              <BookList />
+              {selectedBooks && selectedBooks.length > 0 ? (
+                <BookList books={selectedBooks} />
+              ) : (
+                <></>
+              )}
             </div>
             <div className="scan_modal_add_books_button"></div>
           </div>

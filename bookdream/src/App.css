@@ -518,7 +518,7 @@
 .scan_modal_book_search_container {
   width: 100%;
   height: 100%;
-  max-height: 600px;
+  max-height: 400px;
   background-color: var(--main-color-darker);
   padding: var(--small-spacing);
   border-radius: var(--round);
@@ -540,6 +540,26 @@
   align-items: center;
 }
 
+.scan_modal_book_search_accept{
+  height:100%;
+  width: 100%;
+  max-height: 35px;
+  max-width: 100px;
+  background-color: var(--main-color-lighter);
+  transition: background-color var(--short-transition) ease-in-out;
+  border-radius: var(--round);
+  margin-top: var(--small-spacing);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.scan_modal_book_search_accept:hover{
+  background-color: var(--secondary-color-lighter);
+}
+
 .type_title {
   width: 50%;
   height: 90%;
@@ -548,6 +568,7 @@
   justify-content: center;
   border-top-left-radius: var(--slightly-round);
   border-bottom-left-radius: var(--slightly-round);
+  transition: background-color var(--short-transition) ease-in-out;
 }
 
 .type_author {
@@ -558,6 +579,8 @@
   justify-content: center;
   border-top-right-radius: var(--slightly-round);
   border-bottom-right-radius: var(--slightly-round);
+  transition: background-color var(--short-transition) ease-in-out;
+
 }
 
 .type_title:hover {
@@ -593,7 +616,9 @@
   background-color: var(--main-color-lighter);
   border-radius: var(--slightly-round);
   height: 100%;
+  max-height: 300px;
   padding: var(--small-spacing);
+  overflow-y: auto;
 }
 
 .scan_modal_selected_books_container {
@@ -610,4 +635,35 @@
   font-size: var(--small-font);
   display: flex;
   flex-direction: column;
+}
+
+
+/*BookList*/
+
+.booklist_container{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+}
+
+.booklist_book_container{
+  display: flex;
+  flex-direction: column;
+  background-color: var(--main-color);
+  border-radius: var(--slightly-round);
+  justify-content: center;
+  align-items: center;
+  margin: var(--small-spacing);
+  width: 40%;
+  max-width: 200px;
+  text-align: center;
+  padding: var(--small-spacing);
+}
+
+.booklist_book_container img{
+  height:80%;
+  width: auto;
+  max-height: 200px;
+  max-width: 150px;
 }

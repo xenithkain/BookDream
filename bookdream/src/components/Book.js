@@ -6,6 +6,7 @@ class Book {
     cover = [],
     tags = [],
     isbn = "",
+    checked_out = false,
     id = ""
   ) {
     this.title = title;
@@ -14,6 +15,7 @@ class Book {
     this.cover = cover;
     this.tags = tags;
     this.isbn = isbn;
+    this.checked_out = checked_out;
     this.id = id;
   }
 
@@ -74,6 +76,14 @@ class Book {
     this.isbn = isbn;
   }
 
+  setCheckedOut(x) {
+    this.checked_out = x;
+  }
+
+  getCheckedOut() {
+    return this.checked_out;
+  }
+
   setId(id) {
     this.id = id;
   }
@@ -90,6 +100,7 @@ class Book {
       covers: this.cover,
       tags: this.tags,
       isbn: this.isbn,
+      checked_out: false,
     };
   }
 }
