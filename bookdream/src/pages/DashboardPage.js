@@ -8,12 +8,14 @@ import {
   fetchClassrooms,
   createClassroomDB,
   fetchAvailableBooks,
+  getBooks,
 } from "../appwrite/appwriteConfig";
 import Classroom from "../components/Classroom";
 import { useAddClassroomModal } from "../contexts/AddClassroomModalContext";
 import AddClassroomModal from "../components/modals/AddClassroomModal";
 import { useScanBookModal } from "../contexts/ScanModalContext";
 import ScanModal from "../components/modals/ScanModal";
+import RecentBook from "../components/RecentBook";
 
 function DashboardPage({ setShowNav }) {
   const { userColors, changeColors } = UseUserSettings();
@@ -27,6 +29,29 @@ function DashboardPage({ setShowNav }) {
     setShowNav(true);
     updateClassrooms();
     getAvailableBooks();
+  }, []);
+
+  const [newestBooks, setNewestBooks] = useState([]);
+
+  useEffect(() => {
+    const getNewestBooks = async () => {
+      let userBooks = await getBooks();
+      userBooks.sort((a, b) => {
+        const dateA = new Date(a.$createdAt);
+        const dateB = new Date(b.$createdAt);
+
+        // Compare dates (newest first)
+        return dateB - dateA;
+      });
+      return userBooks;
+    };
+    const minuteInterval = setInterval(() => {
+      getNewestBooks().then((books) => {
+        setNewestBooks(books);
+      });
+    }, 10000);
+
+    return () => clearInterval(minuteInterval);
   }, []);
 
   const getAvailableBooks = async () => {
@@ -97,6 +122,11 @@ function DashboardPage({ setShowNav }) {
         </div>
         <div className="recent_books_container">
           <div className="medium_title">Recent Books</div>
+          <div className="recent_books_content">
+            {newestBooks.map((book, index) => {
+              return <RecentBook key={book.$id} book={book} />;
+            })}
+          </div>
         </div>
 
         <div className="actions_container">

@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import BookOptionsModal from "./modals/BookOptionsModal";
-import { removeBooks } from "../appwrite/appwriteConfig";
-
-const BookList = ({ books, checkedBooks, setCheckedBooks }) => {
-  const [isSelectedList, setIsSelectedList] = useState(
-    books && books.length > 0 ? Array(books.length).fill(false) : []
-  );
+const BookList = ({
+  books,
+  checkedBooks,
+  setCheckedBooks,
+  workSelected,
+  setWorkSelected,
+  chosenWork,
+  setChosenWork,
+}) => {
   const toggleBookSelection = (index) => {
     setCheckedBooks((prevList) => {
       const newList = [...prevList];
@@ -13,15 +14,89 @@ const BookList = ({ books, checkedBooks, setCheckedBooks }) => {
       return newList;
     });
   };
+  const toggleWorkSelection = (index) => {
+    setWorkSelected(true);
+    setChosenWork(books[index]);
+  };
 
   return (
     <>
-      {books && books.length > 0 ? (
+      {workSelected ? (
+        <>
+          {books && books.length > 0 ? (
+            <>
+              <div className="booklist_container">
+                {books.map((book, index) => {
+                  const isSelected = checkedBooks ? checkedBooks[index] : false;
+                  return (
+                    <>
+                      <div
+                        className="booklist_book_container"
+                        key={index}
+                        onClick={() => toggleBookSelection(index)}
+                      >
+                        <div
+                          className={`classroom_book_selected_tag ${
+                            isSelected ? "selected" : ""
+                          }`}
+                        ></div>
+                        <img src={book.getCover("Medium")}></img>
+                        <p className="booklist_book_title">{book.title}</p>
+                      </div>
+                    </>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <>
+              <p>No Editions</p>
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          {books && books.length ? (
+            <>
+              <div className="booklist_container">
+                {books.map((book, index) => {
+                  const isSelected = checkedBooks ? checkedBooks[index] : false;
+
+                  return (
+                    <>
+                      <div
+                        className="booklist_book_container"
+                        key={index}
+                        onClick={() => toggleWorkSelection(index)}
+                      >
+                        <div
+                          className={`classroom_book_selected_tag ${
+                            isSelected ? "selected" : ""
+                          }`}
+                        ></div>
+                        <img
+                          src={`https://covers.openlibrary.org/b/olid/${book.cover_edition_key}-M.jpg`}
+                        ></img>
+                        <p className="booklist_book_title">{book.title}</p>
+                      </div>
+                    </>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <>
+              <p>No Works</p>
+            </>
+          )}
+        </>
+      )}
+      {/* {workSelected && books && books.length > 0 ? (
         <>
           <div className="booklist_container">
             {books.map((book, index) => {
               const isSelected = checkedBooks ? checkedBooks[index] : false;
-
+              console.log("booklist: ", book);
               return (
                 <>
                   <div
@@ -45,6 +120,37 @@ const BookList = ({ books, checkedBooks, setCheckedBooks }) => {
       ) : (
         <p>No books found</p>
       )}
+      {!workSelected && books && books.length > 0 ? (
+        <>
+          <div className="booklist_container">
+            {books.map((book, index) => {
+              const isSelected = checkedBooks ? checkedBooks[index] : false;
+
+              return (
+                <>
+                  <div
+                    className="booklist_book_container"
+                    key={index}
+                    onClick={() => toggleWorkSelection(index)}
+                  >
+                    <div
+                      className={`classroom_book_selected_tag ${
+                        isSelected ? "selected" : ""
+                      }`}
+                    ></div>
+                    <img
+                      src={`https://covers.openlibrary.org/b/olid/${book.cover_edition_key}-M.jpg`}
+                    ></img>
+                    <p>{book.title}</p>
+                  </div>
+                </>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <p>No books found</p>
+      )} */}
     </>
   );
 };

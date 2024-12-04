@@ -31,6 +31,7 @@ export async function fetchAuthorNames(authors) {
         return authorData.name;
       })
     );
+    console.log("Returning names: " + names);
     return names;
   } catch (error) {
     console.error("Error fetching author names", error);
