@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@react-pdf/renderer": "^4.1.5",
+    "react-barcode": "^1.5.3"
+  }
+}

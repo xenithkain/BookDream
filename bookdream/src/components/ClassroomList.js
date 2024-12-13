@@ -1,14 +1,39 @@
+import React, { useState, useEffect } from "react";
 import { MdKeyboardArrowDown } from "react-icons/md";
+import { getOverdueBooks } from "../appwrite/appwriteConfig";
+import ClassroomOptionsDropdown from "./Dropdowns/ClassroomOptionsDropdown";
 
-const ClassroomList = ({ classrooms }) => {
+const ClassroomList = ({
+  classrooms,
+  overdueBooksMap,
+  onClickClassroom,
+  setSelectedClassroom,
+  openCheckoutBooksModal,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <>
       {classrooms.length > 0 ? (
         <div className="classroom_list_container">
-          {classrooms.map((classroom, index) => {
-            console.log(classroom);
-            return (
-              <div className="classroom_list_item" key={classroom.id}>
+          {classrooms.map((classroom) => (
+            <>
+              <div
+                className="classroom_list_item"
+                key={classroom.id}
+                onClick={() => {
+                  setSelectedClassroom(classroom);
+                  if (!isOpen) {
+                    setIsOpen(true);
+                  }
+                }}
+              >
+                <ClassroomOptionsDropdown
+                  openCreateCardsModal={onClickClassroom}
+                  openCheckoutBooksModal={openCheckoutBooksModal}
+                  isOpen={isOpen}
+                  setIsOpen={setIsOpen}
+                />
                 <div
                   className="classroom_list_item_divider"
                   style={{ backgroundColor: classroom.color }}
@@ -25,20 +50,19 @@ const ClassroomList = ({ classrooms }) => {
                   <p style={{ fontSize: "var(--small2-font)" }}>
                     Students: {classroom.students.length}
                   </p>
-                  {classroom._available_books ? (
-                    <p>Books: {classroom._available_books.length}</p>
+                  {classroom.books ? (
+                    <p>Books: {classroom.books.length}</p>
                   ) : (
                     <p>Books: 0</p>
                   )}
                 </div>
                 <div className="classroom_list_overdue_indicator_container">
-                  {classroom.overdue_books &&
-                  classroom.overdue_books.length > 0 ? (
+                  {overdueBooksMap[classroom.id] > 0 ? (
                     <>
                       <button className="classroom_list_overdue_dropdown">
                         <MdKeyboardArrowDown />
                       </button>
-                      <p>{classroom.overdue_books.length} books overdue</p>
+                      <p>{overdueBooksMap[classroom.id]} books overdue</p>
                       <div
                         className="classroom_list_overdue_indicator_light"
                         style={{ backgroundColor: "red" }}
@@ -55,11 +79,11 @@ const ClassroomList = ({ classrooms }) => {
                   )}
                 </div>
               </div>
-            );
-          })}
+            </>
+          ))}
         </div>
       ) : (
-        <></>
+        <p>No classrooms available</p>
       )}
     </>
   );

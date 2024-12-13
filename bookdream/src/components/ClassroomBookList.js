@@ -14,8 +14,9 @@ const ClassroomBookList = ({ books, setChosenBooks, bookSearch }) => {
   // Update selectedBooks based on isSelectedList whenever it changes
   useEffect(() => {
     const selectedBooks = books.filter((_, index) => isSelectedList[index]);
+    console.log("Selected Books in classroombooklist: ", selectedBooks);
     setChosenBooks(selectedBooks);
-  }, [isSelectedList, books, setChosenBooks]);
+  }, [isSelectedList]);
 
   useEffect(() => {
     setSortedBooks((oldbooks) => {

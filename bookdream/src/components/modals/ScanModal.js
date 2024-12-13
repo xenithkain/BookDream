@@ -1,8 +1,6 @@
 import { useScanBookModal } from "../../contexts/ScanModalContext";
 import { FaXmark } from "react-icons/fa6";
 import { ImCheckmark } from "react-icons/im";
-import TagList from "../TagList";
-
 import {
   getBooks,
   checkForBook,
@@ -20,17 +18,17 @@ import {
 } from "../../openlibrary/openlibrary";
 import { useState, useEffect } from "react";
 import Book from "../Book";
-import BookTile from "../BookTile";
 import {
   account,
   databases,
   usersCollection,
   databaseKey,
 } from "../../appwrite/appwriteConfig";
-import Tag from "../Tag";
 import { sortList, api_key } from "../utility";
 import BookList from "../BookList";
 import SelectedBookList from "../SelectedBooksList";
+import TagsList from "../TagsList";
+import { useTagModal } from "../../contexts/TagModalContext";
 
 function ScanModal({ isOpen, books, setBooks }) {
   const { isScanModalOpen, closeScanBookModal } = useScanBookModal();
@@ -51,21 +49,20 @@ function ScanModal({ isOpen, books, setBooks }) {
   const [workSelected, setWorkSelected] = useState(false);
   const [chosenWork, setChosenWork] = useState();
 
-  const [currentBook, setCurrentBook] = useState(null);
-  const [scanState, setScanState] = useState("No Book Scanned");
-
-  const [scannedBooks, setScannedBooks] = useState([]);
-  const [tags, setTags] = useState([]);
+  const [tagSearch, setTagSearch] = useState("");
+  const [userTags, setUserTags] = useState([]);
+  const [searchedTags, setSearchedTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
-
-  useEffect(() => {
-    setSearchedBooks([]); // Clear the array on component mount
-  }, []);
 
   useEffect(() => {
     setScanModalStatus(
       "Please Use the Search Bar To Find A Book, Or Scan A Bar Code."
     );
+    setSearchedBooks([]); // Clear the array on component mount
+    getTags().then((tags) => {
+      setUserTags(tags);
+      setSearchedTags(tags);
+    });
     const getData = account.get();
     getData.then(
       (response) => {
@@ -104,86 +101,30 @@ function ScanModal({ isOpen, books, setBooks }) {
     };
   });
 
-  const bookGenres = [
-    "Fantasy",
-    "Fiction",
-    "Non fiction",
-    "Science Fiction",
-    "Mystery",
-    "Thriller",
-    "Romance",
-    "Historical Fiction",
-    "Young Adult",
-    "Dystopian",
-    "Adventure",
-    "Contemporary",
-    "Horror",
-    "Paranormal",
-    "Biography",
-    "Memoir",
-    "Self-Help",
-    "Cookbooks",
-    "Graphic Novels",
-    "Short Stories",
-    "Classic Literature",
-    "Poetry",
-    "Crime",
-    "Urban Fantasy",
-    "LGBTQ+",
-    "Children's",
-    "Middle Grade",
-    "Juvenile Fiction",
-    "Picture Books",
-    "Early Readers",
-    "Chapter Books",
-    "Fairy Tales",
-    "Fables",
-    "Mythology",
-    "Magical Realism",
-    "Historical Romance",
-    "Chick Lit",
-    "Humor",
-    "Satire",
-    "Autobiography",
-    "True Crime",
-    "Dark Fantasy",
-    "Psychological Thriller",
-    "Time Travel",
-    "Education",
-    "Science",
-    "Nature",
-    "Sports",
-    "Military",
-    "War",
-    "Travel",
-    "Philosophy",
-    "Essays",
-    "Anthologies",
-    "Spirituality",
-    "Political",
-    "Technology",
-    "School Life",
-    "Wizards",
-    "Magic",
-    "Supernatural",
-  ];
+  useEffect(() => {
+    setCheckedBooks(new Array(searchedBooks.length).fill(false));
+  }, [searchedBooks]);
 
-  const filterGenres = (genres) => {
-    let newGenres = [];
+  useEffect(() => {
+    setCheckedSelectedBooks(new Array(searchedBooks.length).fill(false));
+  }, [selectedBooks]);
 
-    for (let genre of genres) {
-      console.log("checking genre: " + genre);
-      if (bookGenres.includes(genre)) {
-        newGenres.push(genre);
-      }
-    }
-    return newGenres;
-  };
+  useEffect(() => {
+    let filteredTags = userTags.filter((tag) => {
+      let lowerName = tag.name.toLowerCase();
+      return lowerName.includes(tagSearch.toLowerCase());
+    });
+    setSearchedTags(filteredTags);
+  }, [tagSearch]);
 
-  const handleSave = () => {
-    handleBookUpload();
-    closeScanBookModal();
-  };
+  useEffect(() => {
+    userTags.sort((a, b) => {
+      a.name.localeCompare(b.name);
+    });
+    searchedTags.sort((a, b) => {
+      a.name.localeCompare(b.name);
+    });
+  }, [userTags, searchedTags]);
 
   useEffect(() => {
     let fetchEditions = async () => {
@@ -327,6 +268,86 @@ function ScanModal({ isOpen, books, setBooks }) {
     fetchEditions();
   }, [workSelected]);
 
+  const bookGenres = [
+    "Fantasy",
+    "Fiction",
+    "Non fiction",
+    "Science Fiction",
+    "Mystery",
+    "Thriller",
+    "Romance",
+    "Historical Fiction",
+    "Young Adult",
+    "Dystopian",
+    "Adventure",
+    "Contemporary",
+    "Horror",
+    "Paranormal",
+    "Biography",
+    "Memoir",
+    "Self-Help",
+    "Cookbooks",
+    "Graphic Novels",
+    "Short Stories",
+    "Classic Literature",
+    "Poetry",
+    "Crime",
+    "Urban Fantasy",
+    "LGBTQ+",
+    "Children's",
+    "Middle Grade",
+    "Juvenile Fiction",
+    "Picture Books",
+    "Early Readers",
+    "Chapter Books",
+    "Fairy Tales",
+    "Fables",
+    "Mythology",
+    "Magical Realism",
+    "Historical Romance",
+    "Chick Lit",
+    "Humor",
+    "Satire",
+    "Autobiography",
+    "True Crime",
+    "Dark Fantasy",
+    "Psychological Thriller",
+    "Time Travel",
+    "Education",
+    "Science",
+    "Nature",
+    "Sports",
+    "Military",
+    "War",
+    "Travel",
+    "Philosophy",
+    "Essays",
+    "Anthologies",
+    "Spirituality",
+    "Political",
+    "Technology",
+    "School Life",
+    "Wizards",
+    "Magic",
+    "Supernatural",
+  ];
+
+  const filterGenres = (genres) => {
+    let newGenres = [];
+
+    for (let genre of genres) {
+      console.log("checking genre: " + genre);
+      if (bookGenres.includes(genre)) {
+        newGenres.push(genre);
+      }
+    }
+    return newGenres;
+  };
+
+  const handleSave = () => {
+    handleBookUpload();
+    closeScanBookModal();
+  };
   const handleBookSearch = async () => {
     setSearchedWorks([]);
     let works = [];
@@ -385,7 +406,7 @@ function ScanModal({ isOpen, books, setBooks }) {
               });
               works = sortedResults;
             } else {
-              setScanState("Book Not Found");
+              setScanModalStatus("Book Not Found");
             }
             resolve();
           }
@@ -427,14 +448,6 @@ function ScanModal({ isOpen, books, setBooks }) {
     console.log("searchedBooks: ", searchedBooks);
   };
 
-  useEffect(() => {
-    setCheckedBooks(new Array(searchedBooks.length).fill(false));
-  }, [searchedBooks]);
-
-  useEffect(() => {
-    setCheckedSelectedBooks(new Array(searchedBooks.length).fill(false));
-  }, [selectedBooks]);
-
   const addSearchedBooks = () => {
     for (let i = 0; i < searchedBooks.length; i++) {
       if (checkedBooks[i] == true) {
@@ -454,7 +467,13 @@ function ScanModal({ isOpen, books, setBooks }) {
   const handleBookUpload = async () => {
     if (selectedBooks && selectedBooks.length > 0) {
       for (let i = 0; i < selectedBooks.length; i++) {
+        let newTags = [];
+        for (let j = 0; j < selectedTags.length; j++) {
+          newTags.push(JSON.stringify(selectedTags[i]));
+        }
+        selectedBooks[i].setTags(newTags);
         const checkedBook = await checkForBook(selectedBooks[i].getIsbn());
+
         if (checkedBook != null) {
           const userDocument = await databases.getDocument(
             databaseKey,
@@ -477,6 +496,11 @@ function ScanModal({ isOpen, books, setBooks }) {
         } else {
           // Add book to the Books collection
           //console.log(selectedBooks[i].authors);
+          let newTags = [];
+          for (let j = 0; j < selectedTags.length; j++) {
+            newTags.push(JSON.stringify(selectedTags[i]));
+          }
+          selectedBooks[i].setTags(newTags);
           const response = await databases.createDocument(
             databaseKey,
             booksCollection,
@@ -508,15 +532,6 @@ function ScanModal({ isOpen, books, setBooks }) {
     }
   };
 
-  useEffect(() => {
-    async function fetchTags() {
-      let sortedTags = await getTags();
-      sortList(sortedTags);
-      setTags(sortedTags);
-    }
-    fetchTags();
-  }, [isScanModalOpen]);
-
   const getWork = async (key) => {
     let work;
     let promise = new Promise((resolve) => {
@@ -537,34 +552,6 @@ function ScanModal({ isOpen, books, setBooks }) {
   };
 
   const createBook = async (isbn) => {
-    /*
-    title: currEdition.title || "Unknown Title",
-    authors:
-      currEdition.authors && currEdition.authors.length > 0
-        ? await fetchAuthorNames(currEdition.authors)
-        : [],
-    genres: chosenWork.subject
-      ? filterGenres(chosenWork.subject)
-      : currEdition.subjects
-      ? filterGenres(currEdition.subjects)
-      : [],
-    covers: currEdition.covers
-      ? [
-          `https://covers.openlibrary.org/b/id/${currEdition.covers[0]}-S.jpg`,
-          `https://covers.openlibrary.org/b/id/${currEdition.covers[0]}-M.jpg`,
-          `https://covers.openlibrary.org/b/id/${currEdition.covers[0]}-L.jpg`,
-        ]
-      : [],
-    isbn: currEdition.isbn_13
-      ? currEdition.isbn_13[0]
-      : currEdition.isbn_10
-      ? currEdition.isbn_10[0]
-      : "",
-    format: currEdition.physical_format
-      ? currEdition.physical_format
-      : "",
-      */
-
     if (!isbn || (isbn.length !== 10 && isbn.length !== 13)) {
       console.error("Invalid ISBN number provided.");
       return;
@@ -635,6 +622,28 @@ function ScanModal({ isOpen, books, setBooks }) {
     }
   };
 
+  const handleAddTag = (tag) => {
+    setSelectedTags((prev) => {
+      return [...prev, tag];
+    });
+    setSearchedTags((prev) => {
+      return prev.filter((prevtag) => {
+        return prevtag.name != tag.name;
+      });
+    });
+  };
+
+  const handleRemoveSelectedTags = (tag) => {
+    setSearchedTags((prev) => {
+      return [...prev, tag];
+    });
+    setSelectedTags((prev) => {
+      return prev.filter((prevtag) => {
+        return prevtag.name != tag.name;
+      });
+    });
+  };
+
   const handleGoBackToWorks = () => {
     setWorkSelected(false);
     setChosenWork(null);
@@ -649,34 +658,6 @@ function ScanModal({ isOpen, books, setBooks }) {
       if (checkedSelectedBooks[i]) {
         setSelectedBooks((prev) => prev.filter((_, index) => index !== i));
       }
-    }
-  };
-
-  const handleAddScanTag = (tagName) => {
-    const tagToAdd = tags.find((tag) => tag.name === tagName);
-    if (tagToAdd) {
-      const updatedTags = tags.filter((tag) => tag.name !== tagName);
-
-      const updatedSelectedTags = [...selectedTags, tagToAdd];
-      sortList(updatedTags);
-      sortList(updatedSelectedTags);
-      setTags(updatedTags);
-      setSelectedTags(updatedSelectedTags);
-    }
-  };
-
-  const handleRemoveScanTag = (tagName) => {
-    const tagToAdd = selectedTags.find((tag) => tag.name === tagName);
-    if (tagToAdd) {
-      const updatedSelectedTags = selectedTags.filter(
-        (tag) => tag.name !== tagName
-      );
-
-      const updatedTags = [...tags, tagToAdd];
-      sortList(updatedTags);
-      sortList(updatedSelectedTags);
-      setTags(updatedTags);
-      setSelectedTags(updatedSelectedTags);
     }
   };
 
@@ -790,9 +771,27 @@ function ScanModal({ isOpen, books, setBooks }) {
           </div>
           <div className="horizontal_alligner">
             <div className="scan_modal_available_tags_container">
-              <TagList />
+              <label className="scan_modal_tag_search_label">Search</label>
+              <input
+                className="scan_modal_text_input"
+                type="text"
+                value={tagSearch}
+                placeholder="Search For Tag"
+                onChange={(newName) => setTagSearch(newName.target.value)}
+              ></input>
+              <div className="scan_modal_searched_tags_container">
+                <TagsList tags={searchedTags} handleClick={handleAddTag} />
+              </div>
             </div>
-            <div className="scan_modal_current_tags_container"></div>
+            <div className="scan_modal_current_tags_container">
+              <p>Current Tags</p>
+              <div className="scan_modal_selected_tags_container">
+                <TagsList
+                  tags={selectedTags}
+                  handleClick={handleRemoveSelectedTags}
+                />
+              </div>
+            </div>
             <div className="scan_modal_selected_books_container">
               <div style={{ fontSize: "1.2rem" }}>Selected Books</div>
               {selectedBooks && selectedBooks.length > 0 ? (

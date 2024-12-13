@@ -6,13 +6,12 @@ const TagModalContext = createContext();
 // Create a provider component
 export const TagModalProvider = ({ children }) => {
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
-  //const [isAdd, setIsAdd] = useState(false)
 
-  const openModal = (x, y) => {
+  const openTagModal = () => {
     setIsTagModalOpen(true);
   };
 
-  const closeModal = () => {
+  const closeTagModal = () => {
     setIsTagModalOpen(false);
   };
 
@@ -20,8 +19,8 @@ export const TagModalProvider = ({ children }) => {
     <TagModalContext.Provider
       value={{
         isTagModalOpen,
-        openModal,
-        closeModal,
+        openTagModal,
+        closeTagModal,
       }}
     >
       {children}

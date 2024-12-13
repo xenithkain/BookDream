@@ -44,11 +44,11 @@ function AddClassroomModal({ onSave, books }) {
             book.covers,
             book.tags,
             book.isbn,
+            book.checked_out,
             book.$id
           )
         );
       });
-      console.log(newBooks);
       setAvailableBooks(newBooks);
     };
     getAvaialbleBooks();

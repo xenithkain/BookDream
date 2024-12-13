@@ -2,89 +2,67 @@ import Student from "./Student";
 import Book from "./Book";
 
 class Classroom {
-  constructor(
-    id = "",
-    name = "",
-    students = [],
-    available_books = [],
-    checked_out_books = [],
-    overdue_books = [],
-    color = ""
-  ) {
-    this._name = name; // Internal variable to store name
-    this._students = students; // Internal variable to store students
-    this._available_books = available_books; // Internal variable to store books
-    this._checked_out_books = checked_out_books;
-    this._overdue_books = overdue_books;
-    this._id = id;
-    this._color = color;
+  constructor(id = "", name = "", students = [], books = [], color = "") {
+    this.name = name; // Internal variable to store name
+    this.students = students; // Internal variable to store students
+    this.books = books; // Internal variable to store books
+    this.id = id;
+    this.color = color;
   }
 
   // Getter for name
-  get name() {
-    return this._name;
+  getName() {
+    return this.name;
   }
 
-  get color() {
-    return this._color;
+  getColor() {
+    return this.color;
   }
 
-  get id() {
-    return this._id;
+  getId() {
+    return this.id;
   }
 
   // Getter for students
-  get students() {
-    return this._students;
+  getStudents() {
+    return this.students;
   }
 
   // Getter for books
-  get available_books() {
-    return this._available_books;
-  }
-
-  get checked_out_books() {
-    return this._checked_out_books;
-  }
-
-  get overdue_books() {
-    return this._overdue_books;
+  getBooks() {
+    return this.books;
   }
 
   // Setter for name
-  set name(newName) {
-    this._name = newName; // Set the internal variable
+  setName(newName) {
+    this.name = newName; // Set the internal variable
   }
 
-  set id(newId) {
-    this._id = newId;
+  setId(newId) {
+    this.id = newId;
   }
 
-  set color(newColor) {
-    this._color = newColor;
+  setColor(newColor) {
+    this.color = newColor;
   }
 
   // Setter for books
-  set available_books(newBooks) {
-    this._available_books = newBooks; // Set the internal variable
+  setBooks(newBooks) {
+    this.books = newBooks; // Set the internal variable
   }
 
-  set checked_out_books(newBooks) {
-    this._checked_out_books = newBooks; // Set the internal variable
-  }
-
-  set overdue_books(newBooks) {
-    this._overdue_books = newBooks; // Set the internal variable
+  setStudents(newStudents) {
+    this.students = newStudents;
   }
 
   // Method to add a student
   addStudent(newStudent) {
-    this._students.push(newStudent);
+    this.students.push(newStudent);
   }
 
   // Method to add a book
   addBook(newBook) {
-    this._available_books.push(newBook); // Fixed variable name to _books
+    this.books.push(newBook); // Fixed variable name to _books
   }
 }
 
